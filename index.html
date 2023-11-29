@@ -1,0 +1,728 @@
+<html>
+<head>
+
+<style>
+table, td, th {  
+  border: 0px solid;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0px;
+  width: 50px;
+}
+
+.b {
+  vertical-align: top;
+  height: 250px;
+}
+
+.w {
+  vertical-align: bottom;
+  height: 250px;
+}
+</style>
+
+<script language="javascript">
+"use strict";
+
+class Board {
+    constructor(black, white) {
+		this.blackPieces = Array(12).fill(2);
+		this.whitePieces = Array(12).fill(2);
+		
+		if(black != null || white != null) {
+			
+			for (var i = 0; i < this.blackPieces.length; i++) {
+				this.blackPieces[i] = parseInt(black[i]) || 0;;
+			}
+			
+			for (var i = 0; i < this.whitePieces.length; i++) {
+				this.whitePieces[i] = parseInt(white[i]) || 0;
+			}
+		}
+    }
+    
+	getPiecesLeft(color) {
+        var pieces = this.whitePieces;
+        if (color == "black") {
+            pieces = this.blackPieces;
+        }
+        
+		return pieces.reduce((partialSum, a) => partialSum + a, 0);
+    }
+	
+	move(color, from, direction, isAnimate) {
+        if (from >= 12 || from < 0 || !((direction == "l" ) || (direction == "r"))) {
+            return false;
+        }
+        
+		var change;
+        if (color == "black") {
+            change = this.blackPieces;
+        } else {
+            change = this.whitePieces;
+        }
+        
+		if (change[from] == 0) {
+            return false;
+        }
+        
+		var add = 1;
+		if (direction == "l") {
+            add = -1;
+        }
+		
+		var to = add;
+		
+		while (change[from + to] == 5) {
+			to += add;
+        }
+		
+		if (from + to >= 12 || from + to < 0) {
+            return false;
+        }
+		
+		if(isAnimate) {
+			toAnimateMove(color, from, from + to, change);
+		}
+		
+		change[from]--;
+        change[from + to]++;
+		
+        return true;
+    }
+	
+    attack(color, row, isAnimate) {
+        if (row >= 12 || row < 0) {
+            return false;
+        }
+        
+		var attacker;
+        var attacked;
+        if (color == "black") {
+            attacker = this.blackPieces;
+            attacked = this.whitePieces;
+        }
+        else {
+            attacker = this.whitePieces;
+            attacked = this.blackPieces;
+        }
+        
+		if (attacker[row] < 5) {
+            return false;
+        }
+		
+		if (attacked[row] == 0) {
+            return false;
+        }
+        
+		if(isAnimate) {
+			toAnimateAttack(row, color, attacked[row]);
+		}
+		
+		attacked[row]--;
+        return true;
+    }
+}
+
+
+class Game {
+    constructor(turn, movesRemaining, rolled, board) {
+        if(turn == null) {
+			switch (Math.floor(Math.random() * 2)) {
+				case 0: 
+					turn = "black";
+					break;
+				case 1:
+					turn = "white"
+					break;
+			}
+		}
+		
+		if(movesRemaining == null) {
+			movesRemaining = 0
+		}
+		
+		if(rolled == null) {
+			rolled = 0;
+		}
+		
+		if(board == null) {
+			board = new Board()
+		}
+		
+		this.turn = turn;
+        this.movesRemaining = movesRemaining;
+		this.rolled = rolled
+        this.board = board;
+		this.winner = "";
+    }
+	
+    startTurn() {
+        if (this.movesRemaining != 0) {
+            throw new Error("can't start a new turn when the current turn is not done");
+        } else if (this.board.getPiecesLeft("black") <= 4) {
+            this.winner = "white";
+            return;
+        } else if (this.board.getPiecesLeft("white") <= 4) {
+            this.winner = "black";
+            return;
+        }
+		
+		this.rolled = Math.floor(Math.random() * 6) + 1;
+        this.movesRemaining = this.rolled;
+		
+		if(this.turn == "white") {
+			this.turn = "black";
+		} else {
+			this.turn = "white";
+		}
+    }
+    
+	move(from, direction) {
+        if (this.movesRemaining <= 0) {
+            return;
+        }
+       
+		if (this.board.move(this.turn, from, direction, true)) {
+            this.movesRemaining--;
+        }
+    }
+    
+	attack(row) {
+        if (this.movesRemaining <= 0) {
+            return;
+        }
+		
+        if (this.board.attack(this.turn, row, true)) {
+            this.movesRemaining--;
+        }
+    }
+}
+
+	var game;
+	var selected;
+	var lastRowId;
+	var hide = false;
+
+	function clone(obj) {
+		return Object.setPrototypeOf(JSON.parse(JSON.stringify(obj)), obj);
+	}
+
+    function go(args) {
+		var move = null;
+	
+        if (args == null || args.length == 0) {
+            game = new Game();
+			game.startTurn();
+        } else {
+			var argsJson = JSON.parse(args[0]);
+			var move = argsJson[1];
+			argsJson[0].board = Object.assign(new Board, argsJson[0].board)
+			game = Object.assign(new Game, argsJson[0]);
+			
+			if (game.movesRemaining == 0) {
+				game.startTurn();
+			}
+			
+			if(game.winner != "") {
+				drawText("");
+				drawText(game.winner + "won", 5 ,70);
+			}
+		}
+    }
+
+	function play(move, to) {
+	
+		if(document.getElementById("moveMenu").style.opacity == 0) {
+			return;
+		}
+	
+		hideMoveMenu();
+	
+		if(move == "m") {
+            game.move(parseInt(selected), to);
+		} else {
+			game.attack(parseInt(selected));
+		}
+        
+		if (game.movesRemaining == 0) {
+            game.startTurn();
+        }
+		
+	}
+	
+	function select(rowId) {
+		lastRowId = rowId;
+		
+		if(rowId == null || rowId.length < 2) {
+			return;
+		}
+		
+		if(lastRowId.substring(0, 1) != game.turn.substring(0, 1)) {
+			return;
+		}
+		
+		var moveMenuElement = document.getElementById("moveMenu");
+		moveMenu();
+		
+		if(moveMenuElement.style.opacity == 1) {
+			hideMoveMenu();
+			return;
+		}
+		
+		var pieces = game.board.blackPieces;
+		if(rowId.substring(0, 1) != "b") {
+			pieces = game.board.whitePieces;
+		}
+		
+		var row = parseInt(rowId.substring(1));
+		if(pieces[row] == 0) {
+			return;
+		}
+		
+		setUpMenu(row);
+		
+		moveMenuElement.style.opacity = 1;
+		selected = rowId.substring(1);
+		
+		draw(game, rowId);
+	}
+	
+	function moveMenu() {
+		var moveMenuElement = document.getElementById("moveMenu");
+		
+		var boardMiddleRect = document.getElementById("boardMiddle").getBoundingClientRect();
+		moveMenuElement.style.top = (boardMiddleRect.top + boardMiddleRect.bottom) /2 -28;
+		
+		if(lastRowId == null) {
+			return
+		}
+		
+		var rowRect = document.getElementById(lastRowId).getBoundingClientRect();
+		moveMenuElement.style.left = (rowRect.left + rowRect.right) /2 -79;
+	}
+	
+	function setUpMenu(row) {
+		
+		var menuList = new Array("left", "attack", "right");
+		
+		for(var i = 0;i < menuList.length;i++) {
+			var menu = menuList[i];
+			
+			var element = document.getElementById(menu);
+			var img = document.createElement("div");
+			img.style = "width: 50px; height: 50px; background-image: url('" + menu + ".png');";
+		
+			removeAllChildNodes(element);
+		
+			element.appendChild(img);
+			element.style.opacity = 1;
+			
+			if(i == 0) {
+				if(!clone(game.board).move(game.turn, row, "l")) {
+					element.style.opacity = 0.3;
+				}
+			} else if(i == 1) {
+				if(!clone(game.board).attack(game.turn, row)) {
+					element.style.opacity = 0.3;
+				}
+			} else if(i == 2) {
+				if(!clone(game.board).move(game.turn, row, "r")) {
+					element.style.opacity = 0.3;
+				}
+			}
+		}
+	}
+	
+	function hideMoveMenu() {
+		var moveMenu = document.getElementById("moveMenu").style;
+		
+		if(moveMenu.opacity == 0) {
+			return;
+		}
+		
+		if(hide) {
+			moveMenu.opacity = 0;
+			draw(game);
+		}
+		hide = !hide || !hide;
+	}
+	
+	function removeAllChildNodes(element) {
+		var childNodes = element.childNodes;
+		while (childNodes.length != 0) {
+			element.removeChild(childNodes[0])
+		}
+		return childNodes;
+	}
+	
+	function getLastChildNode(element, color) {
+		var childNodes = element.childNodes;
+		if(color == "b") {
+			return childNodes[childNodes.length -1];
+		}
+		return childNodes[0];
+	}
+	
+	function draw(state, rowId) { 
+		drawText("")
+		drawText(state.turn + " rolled: ", 5 ,70);
+		
+		var roll = document.getElementById("roll");
+		roll.style = "position: relative; width: 50px; height: 50px; top: 15; left: 180px; background-image: url(" + state.rolled + ".png);";
+		
+		var moveStr = "moves";
+		if(state.movesRemaining == 1) {
+			moveStr = "move"
+		}
+		
+		drawText(state.turn + " has " + state.movesRemaining + " " + moveStr + " left", 5, 110);
+		if(game.winner != "") {
+			drawText("");
+			drawText(game.winner + " won", 5 ,70);
+		}
+		
+		var select = false;
+		if(rowId != null && rowId.length >= 2) {
+			if(rowId.substring(0, 1) == state.turn.substring(0, 1)) {
+				select = true
+			}
+		}
+		
+		callDrawPiece("black.png", state.board.blackPieces, rowId, select);
+		callDrawPiece("white.png", state.board.whitePieces, rowId, select, "0");
+	}
+	
+	function callDrawPiece(color, pieces, rowId, select, index) {
+		for(var i = 0; i< pieces.length; i++) {
+			var selected = false;
+			if(select == true && rowId.substring(1) == i && rowId.substring(0, 1) == color.substring(0, 1)) {
+				var selected = true;
+			}
+			
+			drawPiece(color, i, pieces[i], selected, select, index ?? pieces[i] -1);
+		}
+	}
+	
+	function drawPiece(color, row, number, selected, select, index) {
+		var rowId = color.substring(0, 1) + row
+		var rowCell = document.getElementById(rowId);
+
+		var childNodes = removeAllChildNodes(rowCell);
+		
+		for(var i = 0;i < number;i++) {
+			var img = document.createElement("div");
+			img.style = "width: 50px; height: 50px; background-image: url('" + color + "');";
+			
+			rowCell.appendChild(img)
+		}
+		if(childNodes.length != 0) {		
+			childNodes[index].setAttribute("onclick", "select('" + rowId + "')");
+		}
+		if(select) {
+			for(var i = 0;i < childNodes.length;i++) { 
+				if(i != index || !selected) {
+					childNodes[i].style.opacity = 0.5;
+				}
+			}
+		}
+	}
+	
+	function drawText(text, x, y) {
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext("2d");
+		
+		if(text == "") {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
+		
+		ctx.font = "24pt Helvetica";
+		ctx.fillText(text, x, y);
+	}
+	
+	function toAnimateAttack(row, color, height) {
+		var id = color.substring(0, 1) + row;
+		var id2 = "w" + row;
+		
+		if(color == "white") {
+			id2 = id2.replace("w", "b");
+			animateAttackWhite(getLastChildNode(document.getElementById(id), id.substring(0, 1)), getLastChildNode(document.getElementById(id2), id2.substring(0, 1)), height);
+			return;
+		}
+
+		animateAttackBlack(getLastChildNode(document.getElementById(id), id.substring(0, 1)), getLastChildNode(document.getElementById(id2), id2.substring(0, 1)), height);
+	}
+	
+	function animateAttackBlack(attacker, attacked, height) {
+		var id = null;
+		var diffUp = 0;
+		clearInterval(id);
+		height = 6.5 -height;
+		attacker.style.position = "relative";
+		
+		id = setInterval(moveUp, 1);
+		function moveUp() {
+			if (diffUp == height * 50) {
+				clearInterval(id);
+				id = setInterval(moveDown, 1);
+				attacked.style.opacity = 0;
+			} else {
+				diffUp += height;
+				attacker.style.top = diffUp + "px";
+			}	
+		}
+		function moveDown() {
+			if (diffUp == 0) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp -= height;
+				attacker.style.top = diffUp + "px";
+			}	
+		}
+	}
+	
+	function animateAttackWhite(attacker, attacked, height) {
+		var id = null;
+		var diffUp = 0;
+		clearInterval(id);
+		height = 6.5 -height;
+		attacker.style.position = "relative";
+		
+		id = setInterval(moveUp, 1);
+		function moveUp() {
+			if (diffUp == height * 50) {
+				clearInterval(id);
+				id = setInterval(moveDown, 1);
+				attacked.style.opacity = 0;
+			} else {
+				diffUp += height;
+				attacker.style.top = diffUp *-1 + "px";
+			}	
+		}
+		function moveDown() {
+			if (diffUp == 0) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp -= height;
+				attacker.style.top = diffUp *-1 + "px";
+			}	
+		}
+	}
+	
+	function toAnimateMove(color, from, to, pieces) {
+		var id = color.substring(0, 1) + from;
+		var index = 0;
+		var cDiff = pieces[from] - pieces[to];
+		var rDiff = from - to;
+		var childNodes = document.getElementById(id).childNodes;
+		if(color == "black") {
+			index = pieces[from] -1;
+			if(cDiff != 0) {
+				cDiff *= -1;
+			}
+			
+			if(Math.abs(from - to) == 1) {
+				animateBlack(childNodes[index], rDiff, cDiff);
+			} else {
+				animateBlackFar(childNodes[index], from, to, pieces[from], pieces[to]);
+			}
+		} else {
+			if(Math.abs(from - to) == 1) {
+				animateWhite(childNodes[index], rDiff, cDiff);
+			} else {
+				animateWhiteFar(childNodes[index], from, to, pieces[from], pieces[to]);
+			}
+		}
+	}
+	
+	function animateBlack(element, rDiff, cDiff) {
+		var id = null;
+		var diffUp = 0;
+		var diffLeft = 0;
+		cDiff++;
+		clearInterval(id);
+		element.style.position = "relative";
+		
+		id = setInterval(move, 1);
+		function move() {
+			if (diffUp == (cDiff) * 50 && diffLeft == rDiff * 50) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp += cDiff;
+				diffLeft += rDiff;
+				element.style.top = diffUp + "px";
+				element.style.left = diffLeft *-1 + "px";
+			}	
+		}
+	}
+	
+	function animateWhite(element, rDiff, cDiff) {
+		var id = null;
+		var diffUp = 0;
+		var diffLeft = 0;
+		cDiff -= 1;
+		clearInterval(id);
+		element.style.position = "relative";
+		
+		id = setInterval(move, 1);
+		function move() {
+			if (diffUp == cDiff * 50 && diffLeft == rDiff * 50) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp += cDiff;
+				diffLeft += rDiff;
+				element.style.top = diffUp + "px";
+				element.style.left = diffLeft *-1 + "px";
+			}	
+		}
+	}
+	
+	
+	
+	function animateBlackFar(element, rFrom, rTo, cFrom, cTo) {
+		var id = null;
+		var diffUp = 0;
+		var diffLeft = 0;
+		clearInterval(id);
+		element.style.position = "relative";
+		
+		id = setInterval(moveUp, 1);
+		function moveUp() {
+			if (diffUp == (6 - cFrom) * 50) {
+				clearInterval(id);
+				id = setInterval(moveTo, 1);
+			} else {
+				diffUp += (6 - cFrom) * 2;
+				element.style.top = diffUp + "px";
+			}	
+		}
+		function moveTo() {
+			if (diffLeft == (rFrom - rTo) * 50) {
+				clearInterval(id);
+				id = setInterval(moveDown, 1);
+			} else {
+				diffLeft += rFrom - rTo;
+				element.style.left = diffLeft *-1 + "px";
+			}	
+		}
+		function moveDown() {
+			if (diffUp == cTo * 50) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp -= (cTo || 1) * 2;
+				element.style.top = diffUp + "px";
+			}	
+		}
+	}
+	
+	function animateWhiteFar(element, rFrom, rTo, cFrom, cTo) {
+		var id = null;
+		var diffUp = 0;
+		var diffLeft = 0;
+		clearInterval(id);
+		element.style.position = "relative";
+		
+		id = setInterval(moveUp, 1);
+		function moveUp() {
+			if (diffUp == (6 - cFrom) * 50) {
+				clearInterval(id);
+				id = setInterval(moveTo, 1);
+			} else {
+				diffUp += (6 - cFrom) * 2;
+				element.style.top = diffUp *-1 + "px";
+			}	
+		}
+		function moveTo() {
+			if (diffLeft == (rFrom - rTo) * 50) {
+				clearInterval(id);
+				id = setInterval(moveDown, 1);
+			} else {
+				diffLeft += rFrom - rTo;
+				element.style.left = diffLeft *-1 + "px";
+			}	
+		}
+		function moveDown() {
+			if (diffUp == cTo * 50) {
+				clearInterval(id);
+				draw(game);
+			} else {
+				diffUp -= (cTo || 1) * 2;
+				element.style.top = diffUp *-1 + "px";
+			}	
+		}
+	}
+</script>
+
+</head>
+
+<body onresize="moveMenu()" onclick = "hideMoveMenu()">
+<div id = "board" style="background-image: url('board.png'); width:672px; height:593px; margin: auto; user-select: none;">
+<table style = "position:relative; left: 19; top: 18">
+<tr>
+<td id = "b0" class = "b"></td>
+<td id = "b1" class = "b"></td>
+<td id = "b2" class = "b"></td>
+<td id = "b3" class = "b"></td>
+<td id = "b4" class = "b"></td>
+<td id = "b5" class = "b"></td>
+<td style = "width: 36px;"></td>
+<td id = "b6" class = "b"></td>
+<td id = "b7" class = "b"></td>
+<td id = "b8" class = "b"></td>
+<td id = "b9" class = "b"></td>
+<td id = "b10" class = "b"></td>
+<td id = "b11" class = "b"></td>
+</tr>
+<tr id = "boardMiddle" style = "height: 58px;"><td colspan = "13"></td></tr>
+<tr>
+<td id = "w0" class = "w"></td>
+<td id = "w1" class = "w"></td>
+<td id = "w2" class = "w"></td>
+<td id = "w3" class = "w"></td>
+<td id = "w4" class = "w"></td>
+<td id = "w5" class = "w"></td>
+<td style = "width: 36px;"></td>
+<td id = "w6" class = "w"></td>
+<td id = "w7" class = "w"></td>
+<td id = "w8" class = "w"></td>
+<td id = "w9" class = "w"></td>
+<td id = "w10" class = "w"></td>
+<td id = "w11" class = "w"></td>
+</tr>
+<tr><td style = "height: 4px"></td></tr>
+</table>
+
+<div style = "position: relative; top: 25px; height: 1px;">
+<div id = "roll"></div>
+<canvas id = "canvas" width = "400" style="position: relative; top: -70px;"></canvas>
+</div>
+
+</div>
+
+<div id = "moveMenu" style = "position: absolute; opacity: 0; user-select: none; width: 158; height: 56; background-image: url('menu.png');">
+<table>
+<tr>
+<td id = "left" style = "position: relative; width: 50px; height: 50px; top: 3px; left: 4px;" onclick = "play('m', 'l')"></td>
+<td id = "attack" style = "position: relative; width: 50px; height: 50px; top: 3px; left: 4px;" onclick = "play('a')"></td>
+<td id = "right" style = "position: relative; width: 50px; height: 50px; top: 3px; left: 4px;" onclick = "play('m', 'r')"></td>
+</tr>
+</table>
+</div>
+
+<script>
+go();
+draw(game);
+</script>
+
+</body>
+</html>
