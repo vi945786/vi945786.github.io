@@ -1,11 +1,40 @@
 <html>
 <head>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+const url = 'https://orteil.dashnet.org/cookieclicker/';
+
+fetch(url, {
+  method: 'GET',
+  headers: {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'max-age=0',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+  },
+})
+  .then(response => {
+    if (response.status === 304) {
+      // Content hasn't changed since last request, use cached content
+      console.log('Content not modified. Use cached content.');
+      return response.text();
+    } else {
+      // Content has changed, use the new content
+      return response.text();
+    }
+  })
+  .then(html => {
+    // Process the HTML content here
+    console.log(html);
+  })
+  .catch(error => {
+    console.error('Error fetching the page:', error);
+  });
+</script>
 </head>
 <body>
-<script>
-$.get("https://orteil.dashnet.org/cookieclicker/", function(response) { 
-    console.log(response) 
-});
-</script>
 </body>
