@@ -90,9 +90,11 @@ function checkGame() {
 		Game.resPath='https://cdn.dashnet.org/cookieclicker/';
 		Game.local = false;
 		ajax = fixAjax;
+		OldPlaySound = function(url,vol) {};
+		PlaySound = function(url,vol,pitchVar) {};
+		PlayMusicSound = function(url,vol,pitchVar) {};
 		
-		
-		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + ")")
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + ")");
 
 		window.onload();
 	} catch(error) {
