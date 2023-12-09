@@ -1,40 +1,116 @@
 <html>
 <head>
 <script>
-const url = 'https://orteil.dashnet.org/cookieclicker/';
 
-fetch(url, {
-  method: 'GET',
-  headers: {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Cache-Control': 'max-age=0',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'none',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-  },
-})
-  .then(response => {
-    if (response.status === 304) {
-      // Content hasn't changed since last request, use cached content
-      console.log('Content not modified. Use cached content.');
-      return response.text();
-    } else {
-      // Content has changed, use the new content
-      return response.text();
+var originalAppendChild = HTMLElement.prototype.appendChild;
+HTMLElement.prototype.appendChild = function(element) {
+    if (!element) return;
+
+    if (element.tagName == "SCRIPT") {
+        element.src = element.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+    } else if (element.tagName == "LINK") {
+        element.href = element.href.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+    } else if (element.tagName == "IMG") {
+        element.src = element.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
     }
-  })
-  .then(html => {
-    // Process the HTML content here
-    console.log(html);
-  })
-  .catch(error => {
-    console.error('Error fetching the page:', error);
-  });
+	
+	element.style.cssText = element.style.cssText.replace('url\("img\/', "url(https://orteil.dashnet.org/cookieclicker/img/");
+
+    return originalAppendChild.call(this, element);
+};
+
+(async function() {
+	
+var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')     
+
+const parser = new DOMParser();
+const doc = parser.parseFromString(html, 'text/html');
+const scriptTags = doc.querySelectorAll('script');
+
+origin = document.baseURI.split("/")
+origin.pop()
+origin = origin.join("/")
+
+var useScriptTags = new Array()
+scriptTags.forEach(scriptTag => {
+    if(scriptTag.text.includes("VERSION=")) {
+		new Function(scriptTag.text.replaceAll("var", ""))();;
+	}
+	
+	var scriptContent = scriptTag.src;
+    scriptContent = scriptContent.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https")
+    if(scriptContent && !scriptContent.includes("ad")) useScriptTags.push(scriptContent);
+});
+
+useScriptTags.forEach(scriptTag => {
+		var script = document.createElement("script");
+		script.src = scriptTag;
+		document.head.append(script);	
+});
+	
+Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("script")).forEach(script => {
+	script.src = script.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+});
+
+Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("link")).forEach(link => {
+	link.href = link.href.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+});
+
+Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("img")).forEach(img => {
+	img.src = img.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+});
+
+Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("*")).forEach(tag => {
+	tag.style.cssText = tag.style.cssText.replace('url\("img\/', "url(https://orteil.dashnet.org/cookieclicker/img/");
+});
+	
+document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML;
+
+})();
+
+function checkGame() {
+    try {
+		Game.resPath='https://cdn.dashnet.org/cookieclicker/';
+		
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + ")")
+
+		
+		window.onload();
+	} catch(error) {
+		window.setTimeout(checkGame, 100);
+	}
+}
+checkGame();
+
+function checkLinks() {
+    try {
+		if(document.getElementById("linkVersionLive")) throw new Error()
+		
+		Array.prototype.slice.call(document.getElementsByClassName("supportComment")).forEach(tag => {
+			tag.parentNode.removeChild(tag)
+		})
+		
+		document.getElementById("links").parentNode.removeChild(document.getElementById("links"));
+	} catch(error) {
+		window.setTimeout(checkLinks, 100);
+	}
+}
+checkLinks();
+
+function fetchHtml(url) {
+    return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
+        .then(response => {
+            if (response.ok) {
+                return response.json().then(data => data.contents);
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        })
+        .catch(error => {
+            throw error;
+        });
+}
+
 </script>
 </head>
-<body>
-</body>
+<body></body>
