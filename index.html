@@ -56,25 +56,44 @@ Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("link")).for
 	link.href = link.href.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
 });
 
-Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("img")).forEach(img => {
-	img.src = img.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
-});
-
-Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("*")).forEach(tag => {
-	tag.style.cssText = tag.style.cssText.replace('url\("img\/', "url(https://orteil.dashnet.org/cookieclicker/img/");
+Array.prototype.slice.call(doc.head.parentNode.getElementsByClassName("ad")).forEach(ad => {
+	ad.parentNode.removeChild(ad);
 });
 	
-document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML;
+document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");;
 
 })();
+
+var fixAjax=function fetchData(url, callback) {
+  if (url.startsWith("/")) url = "https://orteil.dashnet.org" + url;
+
+  if (url.indexOf('?')==-1) url+='?'; else url+='&';
+  url += 'nocache=' + Date.now();
+
+  fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
+    .then(data => {
+      callback(JSON.parse(data)['contents'].substring(1));
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+}
 
 function checkGame() {
     try {
 		Game.resPath='https://cdn.dashnet.org/cookieclicker/';
+		Game.local = false;
+		ajax = fixAjax;
+		
 		
 		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + ")")
 
-		
 		window.onload();
 	} catch(error) {
 		window.setTimeout(checkGame, 100);
@@ -101,7 +120,7 @@ function fetchHtml(url) {
     return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
         .then(response => {
             if (response.ok) {
-                return response.json().then(data => data.contents);
+				return response.json().then(data => data.contents);
             } else {
                 throw new Error('Network response was not ok.');
             }
