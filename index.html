@@ -60,7 +60,7 @@ Array.prototype.slice.call(doc.head.parentNode.getElementsByClassName("ad")).for
 	ad.parentNode.removeChild(ad);
 });
 	
-document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");;
+document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML.replaceAll("/((url\()|")img\//g", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");;
 
 })();
 
