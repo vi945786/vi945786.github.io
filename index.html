@@ -2,65 +2,56 @@
 <head>
 <script>
 
+var currentUrl = document.baseURI.split("/")
+currentUrl.pop()
+currentUrl = currentUrl.join("/")
+
 var originalAppendChild = HTMLElement.prototype.appendChild;
 HTMLElement.prototype.appendChild = function(element) {
     if (!element) return;
 
     if (element.tagName == "SCRIPT") {
-        element.src = element.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+        element.src = element.src.replace(currentUrl, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+		element.text = element.text.replace(currentUrl, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
     } else if (element.tagName == "LINK") {
-        element.href = element.href.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+        element.href = element.href.replace(currentUrl, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
     } else if (element.tagName == "IMG") {
-        element.src = element.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+        element.src = element.src.replace(currentUrl, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
     }
 	
-	element.style.cssText = element.style.cssText.replace('url\("img\/', "url(https://orteil.dashnet.org/cookieclicker/img/");
+	if(element.style) element.style.cssText = element.style.cssText.replace('url\("img\/', "url(https://orteil.dashnet.org/cookieclicker/img/");
 
     return originalAppendChild.call(this, element);
 };
 
 (async function() {
-	
-var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')     
+var doc = await getDoc();
 
-const parser = new DOMParser();
-const doc = parser.parseFromString(html, 'text/html');
-const scriptTags = doc.querySelectorAll('script');
+doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
 
-origin = document.baseURI.split("/")
-origin.pop()
-origin = origin.join("/")
-
-var useScriptTags = new Array()
-scriptTags.forEach(scriptTag => {
-    if(scriptTag.text.includes("VERSION=")) {
-		new Function(scriptTag.text.replaceAll("var", ""))();;
-	}
-	
-	var scriptContent = scriptTag.src;
-    scriptContent = scriptContent.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https")
-    if(scriptContent && !scriptContent.includes("ad")) useScriptTags.push(scriptContent);
-});
-
-useScriptTags.forEach(scriptTag => {
-		var script = document.createElement("script");
-		script.src = scriptTag;
-		document.head.append(script);	
-});
-	
-Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("script")).forEach(script => {
-	script.src = script.src.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
-});
-
-Array.prototype.slice.call(doc.head.parentNode.getElementsByTagName("link")).forEach(link => {
-	link.href = link.href.replace(origin, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
-});
-
-Array.prototype.slice.call(doc.head.parentNode.getElementsByClassName("ad")).forEach(ad => {
+Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
 	ad.parentNode.removeChild(ad);
 });
-	
-document.head.parentNode.innerHTML = doc.head.parentNode.innerHTML.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll('"img/', '"https://orteil.dashnet.org/cookieclicker/img/').replaceAll("file", "https");;
+
+document.head.innerHTML = "";
+document.body.innerHTML = "";
+
+Array.prototype.slice.call(doc.body.childNodes).forEach(element => {
+	if(element.tagName === "SCRIPT") {
+		appendScript(element, document.body);
+	} else {
+		document.body.appendChild(element);
+	}
+})
+
+Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
+	if(element.tagName === "SCRIPT") {
+		appendScript(element, document.head);
+	} else {
+		document.head.appendChild(element);
+	}
+})
 
 })();
 
@@ -71,18 +62,8 @@ var fixAjax=function fetchData(url, callback) {
   url += 'nocache=' + Date.now();
 
   fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.text();
-    })
-    .then(data => {
-      callback(JSON.parse(data)['contents'].substring(1));
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-    });
+    .then(response => response.text())
+    .then(data => callback(JSON.parse(data)['contents'].substring(1)));
 }
 
 function checkGame() {
@@ -130,6 +111,40 @@ function fetchHtml(url) {
         .catch(error => {
             throw error;
         });
+}
+
+async function getDoc() {
+	var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')     
+	
+	const parser = new DOMParser();
+	var doc = parser.parseFromString(html, "text/html")
+	
+	var docHead = parser.parseFromString(html.split("head>")[1].slice(0, -2), "text/html")
+	
+	Array.prototype.slice.call(docHead.body.childNodes).forEach(element => {
+		docHead.head.append(element)
+	})
+	
+	var docBody = parser.parseFromString(html.split("body>")[1].slice(0, -2), "text/html")
+	
+	Array.prototype.slice.call(docBody.head.childNodes).forEach(element => {
+		docBody.body.append(element)
+	})
+	
+	doc.head.innerHTML = docHead.head.innerHTML;
+	doc.body.innerHTML = docBody.body.innerHTML;
+	
+	return doc;
+}
+
+async function appendScript(element, parentNode) {
+	var scriptType = element.src=='' ? "innerHTML" : "src";
+	var scriptContent = element[scriptType];
+	if(scriptContent.includes("ad")) return;
+	
+	var script = document.createElement("script");
+	script[scriptType] = scriptContent.replace(currentUrl, "https://orteil.dashnet.org/cookieclicker").replace("file", "https");
+	parentNode.append(script);
 }
 
 </script>
