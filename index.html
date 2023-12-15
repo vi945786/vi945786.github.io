@@ -1,6 +1,32 @@
 <html>
 <head>
+<script src="https://cookiesaver-6dd8.restdb.io/assets/js/eventsource.min.js"></script>
+<script src="https://cookiesaver-6dd8.restdb.io/rest/_jsapi.js?plainjs=true"></script>
 <script>
+
+var db = new restdb("657af4b23fc01b465d5b055f")
+var saveFile;
+
+var originalWindowOnbeforeunload = window.onbeforeunload;
+window.addEventListener("beforeunload", function(event) {
+		
+	if(saveFile == undefined) return;
+	
+	Game.WriteSave();
+	var save = localStorageGet("CookieClickerGame");
+	saveFile.savefile.game = save;
+	saveFile.save();
+	
+	var start = new Date().getTime();
+	var end = start;
+	while(end < start + 1500) {
+		end = new Date().getTime();
+	}
+	
+	originalWindowOnbeforeunload()
+	  
+
+});
 
 var currentUrl = document.baseURI.split("/")
 currentUrl.pop()
@@ -75,9 +101,17 @@ function checkGame() {
 		PlaySound = function(url,vol,pitchVar) {};
 		PlayMusicSound = function(url,vol,pitchVar) {};
 		
-		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + ")");
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + '' + ")");
 
-		window.onload();
+		localStorageSet("CookieClickerLang", "EN")
+		new db.gamesaver.find({}, {}, function(err, res) {
+			saveFile = res[0];
+			localStorageSet("CookieClickerGame", saveFile.savefile.game)
+			window.onload();
+		})
+
+
+		
 	} catch(error) {
 		window.setTimeout(checkGame, 100);
 	}
@@ -99,22 +133,8 @@ function checkLinks() {
 }
 checkLinks();
 
-function fetchHtml(url) {
-    return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
-        .then(response => {
-            if (response.ok) {
-				return response.json().then(data => data.contents);
-            } else {
-                throw new Error('Network response was not ok.');
-            }
-        })
-        .catch(error => {
-            throw error;
-        });
-}
-
 async function getDoc() {
-	var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')     
+	var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')
 	
 	const parser = new DOMParser();
 	var doc = parser.parseFromString(html, "text/html")
@@ -147,6 +167,19 @@ async function appendScript(element, parentNode) {
 	parentNode.append(script);
 }
 
+function fetchHtml(url) {
+    return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
+        .then(response => {
+            if (response.ok) {
+				return response.json().then(data => data.contents);
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        })
+        .catch(error => {
+            throw error;
+        });
+}
 </script>
 </head>
 <body></body>
