@@ -19,10 +19,7 @@ if(useAPI) {
 			
 		if(saveFile == undefined) return;
 		
-		Game.WriteSave();
-		var save = localStorageGet("CookieClickerGame");
-		saveFile.savefile.game = save;
-		saveFile.save();
+		save();
 		
 		var start = new Date().getTime();
 		var end = start;
@@ -83,6 +80,13 @@ Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
 
 })();
 
+function save() {
+	Game.WriteSave();
+	var save = localStorageGet("CookieClickerGame");
+	saveFile.savefile.game = save;
+	saveFile.save();
+}
+
 var fixAjax=function fetchData(url, callback) {
   if (!url.startsWith("http")) url = "https://orteil.dashnet.org" + url;
 
@@ -103,7 +107,10 @@ function checkGame() {
 		PlaySound = function(url,vol,pitchVar) {};
 		PlayMusicSound = function(url,vol,pitchVar) {};
 		
-		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/") + '' + ")");
+		
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("60 seconds; shortcut: ctrl+S", "hour").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//") + ")");
+		
+		
 		if(useAPI) {
 			localStorageSet("CookieClickerLang", "EN")
 			new db.gamesaver.find({}, {}, function(err, res) {
@@ -136,6 +143,20 @@ function checkLinks() {
 	}
 }
 checkLinks();
+
+function saveEveryHour() {
+    var d = new Date(),
+        h = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1, 0, 0, 0),
+        e = h - d;
+    if (e > 100) {
+        window.setTimeout(saveEveryHour, e);
+    }
+    try {
+		Game;
+		save();
+	} catch(e) {}
+}
+saveEveryHour();
 
 async function getDoc() {
 	var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')
