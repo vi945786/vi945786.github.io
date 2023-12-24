@@ -11,7 +11,17 @@ currentUrl = currentUrl.join("/")
 var useAPI = (currentUrl == "https://vi945786.github.io");
 
 if(useAPI) {
-	var db = new restdb("657af4b23fc01b465d5b055f")
+	var db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
+	var saved = false;
+	
+	db.on("SAVE", function(error, eventdata) {
+		if(saved) {
+			saved = false
+			return;
+		}
+		Game.ImportSaveCode(eventdata.data.game)
+	})
+	
 	var saveFile;
 	
 	var originalWindowOnbeforeunload = window.onbeforeunload;
@@ -81,6 +91,7 @@ Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
 })();
 
 function save() {
+	if(!useAPI) return;
 	Game.WriteSave();
 	var save = localStorageGet("CookieClickerGame");
 	saveFile.savefile.game = save;
@@ -95,7 +106,7 @@ var fixAjax=function fetchData(url, callback) {
 
   fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`)
     .then(response => response.text())
-    .then(data => callback(JSON.parse(data)['contents'].substring(1)));
+    .then(data => callback(data));
 }
 
 function checkGame() {
@@ -107,9 +118,9 @@ function checkGame() {
 		PlaySound = function(url,vol,pitchVar) {};
 		PlayMusicSound = function(url,vol,pitchVar) {};
 		
+		document.getElementsByClassName("subButton")[0].innerHTML="Settings"
 		
-		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("60 seconds; shortcut: ctrl+S", "hour").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//") + ")");
-		
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//").replaceAll('loc("Options', 'loc("Settings').replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;if(Game.onMenu=='prefs'){l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])}else if(Game.onMenu=='stats'){l('menu').childNodes[1].onclick = function(){saved=true;save();if(useAPI){db.publish('SAVE', {'game': localStorageGet('CookieClickerGame')}, function(error, result){})}}}") + ")");
 		
 		if(useAPI) {
 			localStorageSet("CookieClickerLang", "EN")
