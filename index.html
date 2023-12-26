@@ -106,8 +106,11 @@ function saveButton() {
 }
 
 function loadButton() {
-	db=null
-	location.reload()
+	saveFile.reload(function(err, res) {
+		saveFile = res[0];
+		Game.CloseNotes()
+		Game.ImportSaveCode(saveFile.savefile.game)
+	})
 }
 
 var fixAjax=function (url, callback) {
@@ -177,9 +180,9 @@ function checkLinks() {
 checkLinks();
 
 function saveEveryHour() {
-    var d = new Date(),
-        h = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1, 0, 0, 0),
-        e = h - d;
+    var d = new Date()
+	var h = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + (d.getMinutes>30 ? 1 : 0), d.getMinutes>30 ? 0 : 30, 0, 0)
+    var e = h - d
     if (e > 100) {
         window.setTimeout(saveEveryHour, e);
     }
