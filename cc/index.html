@@ -154,19 +154,14 @@ function checkLinks() {
 }
 checkLinks();
 
-function saveEveryHour() {
-    var d = new Date()
-	var h = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1, 0, 0, 0)
-    var e = h - d
-    if (e > 100) {
-        window.setTimeout(saveEveryHour, e);
-    }
+function autoSave() {
+	window.setTimeout(autoSave, ((10-new Date().getMinutes()%10)*60-new Date().getSeconds())*1000)
     try {
 		Game;
 		save();
 	} catch(e) {}
 }
-saveEveryHour();
+autoSave();
 
 async function getDoc() {
 	var html = await fetchHtml('https://orteil.dashnet.org/cookieclicker')
