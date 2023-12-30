@@ -22,35 +22,40 @@ var useAPI = (currentUrl == "https://vi945786.github.io/cc");
 
 if(useAPI) {
 	
-	while(typeof restdb == "undefined") {}
-	
-	var db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
-	var saved = false;
-	
-	db.on("SAVE", function(error, eventdata) {
-		if(saved) {
-			saved = false
-			return;
-		}
-		Game.ImportSaveCode(eventdata.data.game)
-	})
-	
-	var saveFile;
-	
-	window.addEventListener("beforeunload", function(event) {
+	function checkdb() {
+		try {
+			var db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
+			var saved = false;
 			
-		if(!db) return;
-		if(saveFile == undefined) return;
-		
-		save();
-		
-		var start = new Date().getTime();
-		var end = start;
-		while(end < start + 1500) {
-			end = new Date().getTime();
+			db.on("SAVE", function(error, eventdata) {
+				if(saved) {
+					saved = false
+					return;
+				}
+				Game.ImportSaveCode(eventdata.data.game)
+			})
+			
+			var saveFile;
+			
+			window.addEventListener("beforeunload", function(event) {
+					
+				if(!db) return;
+				if(saveFile == undefined) return;
+				
+				save();
+				
+				var start = new Date().getTime();
+				var end = start;
+				while(end < start + 1500) {
+					end = new Date().getTime();
+				}
+				
+			});
+		} catch(e) {
+			setTimeout(checkdb, 100)
 		}
-		
-	});
+	}
+	checkdb();
 }
 
 var originalAppendChild = HTMLElement.prototype.appendChild;
