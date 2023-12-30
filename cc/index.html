@@ -3,11 +3,18 @@
 <script>
 
 var password = prompt('password');
-var user;
+var user = "";
 var database;
 
-if(password == "945786") user = "violet"
-if(password == "mike") user = "mikael"
+while(user == "") {
+	if(password == "945786") {
+		user = "violet"
+	} else if(password == "mike") {
+		user = "mikael"
+	} else {
+		password = prompt('password'); 
+	}
+}
 
 if(user == "violet") database = "cookiesaver-6dd8"
 if(user == "mikael") database = "mikaelclicker-343b"
@@ -120,7 +127,7 @@ function saveButton() {
 
 function loadButton() {
 	saveFile.reload(function(err, res) {
-		saveFile = res;
+		saveFile = res3;
 		Game.CloseNotes()
 		Game.ImportSaveCode(saveFile.savefile.game)
 	})
@@ -164,7 +171,7 @@ function checkGame() {
 		
 		document.getElementsByClassName("subButton")[0].innerHTML="Settings"
 		
-		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//").replaceAll('loc("Options', 'loc("Settings').replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//").replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;if(Game.onMenu=='prefs'){l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])}else if(Game.onMenu=='stats'){var saveButton = document.createElement('div');saveButton.innerHTML = 'save';saveButton.style.fontSize = 20;saveButton.onclick = window['saveButton'];l('menu').childNodes[1].insertBefore(saveButton, l('menu').childNodes[1].firstChild);var loadButton = document.createElement('div');loadButton.innerHTML = 'load';loadButton.style.fontSize = 20;loadButton.onclick = window['loadButton'];l('menu').childNodes[1].appendChild(loadButton);}") + ")");
+		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//").replaceAll('loc("Options', 'loc("Settings').replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//").replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;if(Game.onMenu=='prefs'){l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])}else if(Game.onMenu=='stats'){var saveButton = document.createElement('div');saveButton.innerHTML = 'save';saveButton.style.fontSize = 20;saveButton.onclick = window['saveButton'];l('menu').childNodes[1].insertBefore(saveButton, l('menu').childNodes[1].firstChild);var loadButton = document.createElement('div');loadButton.innerHTML = 'load';loadButton.style.fontSize = 20;loadButton.onclick = window['loadButton'];l('menu').childNodes[1].appendChild(loadButton);}") + ")");
 		
 		if(useAPI) {
 			localStorageSet("CookieClickerLang", "EN")
