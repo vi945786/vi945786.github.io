@@ -135,7 +135,7 @@ function saveButton() {
 
 function loadButton() {
 	saveFile.reload(function(err, res) {
-		saveFile = res3;
+		saveFile = res;
 		Game.CloseNotes()
 		Game.ImportSaveCode(saveFile.savefile.game)
 	})
