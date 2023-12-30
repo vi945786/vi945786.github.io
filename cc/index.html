@@ -21,6 +21,16 @@ currentUrl = currentUrl.join("/")
 var useAPI = (currentUrl == "https://vi945786.github.io/cc");
 
 if(useAPI) {
+	
+	function checkdb() {
+		try {
+			restdb;
+		} catch(error) {
+			window.setTimeout(checkLinks, 100);
+		}
+	}
+	checkdb();
+	
 	var db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
 	var saved = false;
 	
