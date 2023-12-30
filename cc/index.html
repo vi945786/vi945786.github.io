@@ -229,7 +229,7 @@ function fetchHtml(url) {
         });
 }
 
-function addDatabaseScript(database) {
+async function addDatabaseScript(database) {
 	var sources = ["https://:"+database+".restdb.io/assets/js/eventsource.min.js", "https://"+database+".restdb.io/rest/_jsapi.js?plainjs=true"]
 	
 	sources.forEach(source => {
