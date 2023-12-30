@@ -85,8 +85,16 @@ async function loadGame() {
 		
 		doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
 		doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+
+		Array.prototype.slice.call(doc.getElementsByClassName("adBanner")).forEach(ad => {
+			ad.parentNode.removeChild(ad);
+		});
 		
 		Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
+			ad.parentNode.removeChild(ad);
+		});
+		
+		Array.prototype.slice.call(doc.getElementsByClassName("ifNoAds")).forEach(ad => {
 			ad.parentNode.removeChild(ad);
 		});
 		
@@ -171,6 +179,7 @@ function checkGame() {
 		
 		document.getElementsByClassName("subButton")[0].innerHTML="Settings"
 		l('bigCookie').addEventListener('contextmenu', event => {l('bigCookie').click();return event.preventDefault()});
+		l('support').parentNode.removeChild(l('support'));
 		
 		Game.Launch = eval("(" + Game.Launch.toString().replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/").replace("Game.toSave=true;e.preventDefault();", "").replace('Game.toSave=true', "save()").replace("Game.WritePrefButton('cookiesound", "//").replace("Game.WriteSlider(", "//").replaceAll("Game.prefs.autosave=", "//").replaceAll('loc("Options', 'loc("Settings').replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//").replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;if(Game.onMenu=='prefs'){l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])}else if(Game.onMenu=='stats'){var saveButton = document.createElement('div');saveButton.innerHTML = 'save';saveButton.style.fontSize = 20;saveButton.onclick = window['saveButton'];l('menu').childNodes[1].insertBefore(saveButton, l('menu').childNodes[1].firstChild);var loadButton = document.createElement('div');loadButton.innerHTML = 'load';loadButton.style.fontSize = 20;loadButton.onclick = window['loadButton'];l('menu').childNodes[1].appendChild(loadButton);}").replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", "") + ")");
 		
