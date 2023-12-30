@@ -101,7 +101,7 @@ async function loadGame() {
 		}
 	})
 	
-}
+
 
 function save() {
 	if(!useAPI) return;
@@ -237,6 +237,8 @@ async function addDatabaseScript(database) {
 	var script = document.createElement("script");
 	script.innerHTML = "loadGame()";
 	document.head.append(script);
+}
+
 }
 </script>
 </head>
