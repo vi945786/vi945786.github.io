@@ -16,7 +16,7 @@ var currentUrl = document.baseURI.split("/")
 currentUrl.pop()
 currentUrl = currentUrl.join("/")
 
-var useAPI = (currentUrl == "https://vi945786.github.io/cc");
+var useAPI = true//(currentUrl == "https://vi945786.github.io/cc");
 var db;
 var saveFile;
 var saved = false;
@@ -42,68 +42,72 @@ HTMLElement.prototype.appendChild = function(element) {
 addDatabaseScript(database);
 
 async function loadGame() {
-	if(useAPI) {
-		var key;
-		if(user == "violet") key = "657af4b23fc01b465d5b055f"
-		if(user == "mikael") key = "65900ca4733e2c1cf8decae3"
+	try {
+		if(useAPI) {
+			var key;
+			if(user == "violet") key = "657af4b23fc01b465d5b055f"
+			if(user == "mikael") key = "65900ca4733e2c1cf8decae3"
+			
+			db = new restdb(key, {realtime: true})
+			
+			db.on("SAVE", function(error, eventdata) {
+				if(saved) {
+					saved = false
+					return;
+				}
+				Game.ImportSaveCode(eventdata.data.game)
+			})
+			
+			window.addEventListener("beforeunload", function(event) {
+					
+				if(!db) return;
+				if(saveFile == undefined) return;
+				
+				save();
+				
+				var start = new Date().getTime();
+				var end = start;
+				while(end < start + 1500) {
+					end = new Date().getTime();
+				}
+				
+			});
+		}
 		
-		db = new restdb(key, {realtime: true})
+		var doc = await getDoc();
 		
-		db.on("SAVE", function(error, eventdata) {
-			if(saved) {
-				saved = false
-				return;
+		doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+		doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+		
+		Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
+			ad.parentNode.removeChild(ad);
+		});
+		
+		document.head.innerHTML = "";
+		document.body.innerHTML = "";
+		
+		Array.prototype.slice.call(doc.body.childNodes).forEach(element => {
+			if(element.tagName === "SCRIPT") {
+				appendScript(element, document.body);
+			} else {
+				document.body.appendChild(element);
 			}
-			Game.ImportSaveCode(eventdata.data.game)
 		})
 		
-		window.addEventListener("beforeunload", function(event) {
-				
-			if(!db) return;
-			if(saveFile == undefined) return;
-			
-			save();
-			
-			var start = new Date().getTime();
-			var end = start;
-			while(end < start + 1500) {
-				end = new Date().getTime();
+		Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
+			if(element.tagName === "SCRIPT") {
+				appendScript(element, document.head);
+			} else {
+				document.head.appendChild(element);
 			}
-			
-		});
+		})
+		
+		checkGame();
+		checkLinks();
+		autoSave();
+	} catch(e) {
+		window.setTimeout(loadGame, 100)
 	}
-	
-	var doc = await getDoc();
-	
-	doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
-	doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
-	
-	Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
-		ad.parentNode.removeChild(ad);
-	});
-	
-	document.head.innerHTML = "";
-	document.body.innerHTML = "";
-	
-	Array.prototype.slice.call(doc.body.childNodes).forEach(element => {
-		if(element.tagName === "SCRIPT") {
-			appendScript(element, document.body);
-		} else {
-			document.body.appendChild(element);
-		}
-	})
-	
-	Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
-		if(element.tagName === "SCRIPT") {
-			appendScript(element, document.head);
-		} else {
-			document.head.appendChild(element);
-		}
-	})
-	
-	checkGame();
-	checkLinks();
-	autoSave();
 }	
 
 
