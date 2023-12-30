@@ -43,7 +43,11 @@ HTMLElement.prototype.appendChild = function(element) {
 
 async function loadGame() {
 	if(useAPI) {
-		db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
+		var key;
+		if(user == "violet") key = "657af4b23fc01b465d5b055f"
+		if(user == "mikael") key = "65900ca4733e2c1cf8decae3"
+		
+		db = new restdb(key, {realtime: true})
 		
 		db.on("SAVE", function(error, eventdata) {
 			if(saved) {
