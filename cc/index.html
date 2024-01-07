@@ -184,7 +184,6 @@ function checkGame() {
 		document.getElementsByClassName("subButton")[0].innerHTML="Settings"
 		l('bigCookie').addEventListener('contextmenu', event => {l('bigCookie').click();return event.preventDefault()});
 		l('support').parentNode.removeChild(l('support'));
-		l('sectionRight').style.height = l('store').offsetHeight
 		
 		str = Game.Launch.toString();
 		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/");
