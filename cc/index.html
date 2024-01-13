@@ -10,7 +10,7 @@ var user = "";
 var database;
 
 while(user == "") {
-	if(password == "945786") {
+	if(password == "8659") {
 		user = "violet"
 	} else if(password == "mike") {
 		user = "mikael"
@@ -301,6 +301,10 @@ async function addDatabaseScript(database) {
 	document.head.append(script);
 }
 
+function getSave() {
+    Game.WriteSave()
+    return localStorageGet("CookieClickerGame")
+}
 
 </script>
 </head>
