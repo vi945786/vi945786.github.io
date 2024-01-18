@@ -133,7 +133,7 @@ function saveButton() {
 	saved=true
 	save()
 	if(useAPI) {
-		db.publish('SAVE', {'game': localStorageGet('CookieClickerGame')}, function(error, result) {})
+		db.publish('SAVE', {'game': getSave()}, function(error, result) {})
 	}
 }
 
@@ -147,8 +147,7 @@ function loadButton() {
 
 function save() {
 	if(!useAPI) return;
-	Game.WriteSave();
-	var save = localStorageGet("CookieClickerGame");
+	getSave()
 	saveFile.savefile.game = save;
 	saveFile.save();
 }
@@ -171,6 +170,39 @@ var fixAddEvent=function(el,ev,func) {
 	return false;
 }
 
+function replaceMenu() {
+	if(Game.onMenu=='prefs') {
+		if(Game.Has('Wrapping paper') && Game.ascensionMode == 0) {
+			l('menu').childNodes[3].childNodes[0].insertBefore(l('giftStuff'),l('menu').childNodes[3].childNodes[0].childNodes[1]);
+			l('giftStuff').style.marginTop=-18;
+		}
+		
+		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
+		l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])
+	}else if(Game.onMenu=='stats'){
+		var saveButton = document.createElement('div');
+		saveButton.innerHTML = 'save';
+		saveButton.style.fontSize=20;
+		saveButton.onclick = window['saveButton'];
+		saveButton.onmouseover=function(){saveButton.style.color='#888888'};
+		saveButton.onmouseleave=function(){saveButton.style.color='#ffffff'};
+		var div=document.createElement('div');
+		div.appendChild(saveButton);
+		div.style='display:flex;justify-content:center;align-items:center';
+		l('menu').childNodes[1].insertBefore(div, l('menu').childNodes[1].firstChild);
+		
+		var loadButton = document.createElement('div');
+		loadButton.innerHTML = 'load';
+		loadButton.style.fontSize=20;
+		loadButton.onclick = window['loadButton'];
+		loadButton.onmouseover=function(){(loadButton.style.color='#888888')};
+		loadButton.onmouseleave=function(){(loadButton.style.color='#ffffff')};
+		div=document.createElement('div');
+		div.appendChild(loadButton);
+		div.style='display:flex;justify-content:center;align-items:center';l('menu').childNodes[1].appendChild(div);
+	}
+}
+
 function checkGame() {
     try {
 		Game.resPath='https://cdn.dashnet.org/cookieclicker/';
@@ -186,18 +218,16 @@ function checkGame() {
 		l('support').parentNode.removeChild(l('support'));
 		
 		str = Game.Launch.toString();
-		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/");
-		str = str.replace("Game.toSave=true;e.preventDefault();", "");
-		str = str.replace('Game.toSave=true', "save()");
-		str = str.replace("Game.WritePrefButton('cookiesound", "//");
-		str = str.replace("Game.WriteSlider(", "//");
-		str = str.replaceAll("Game.prefs.autosave=", "//");
-		str = str.replaceAll('loc("Options', 'loc("Settings');
-		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//");
-		str = str.replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", "");
-		str = str.replace("quick||0", 'title=="Exploded a wrinkler"?(2):(quick||0)')
-		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;if(Game.onMenu=='prefs'){if(Game.Has('Wrapping paper')&&Game.ascensionMode==0){l('menu').childNodes[3].childNodes[0].insertBefore(l('giftStuff'),l('menu').childNodes[3].childNodes[0].childNodes[1]);l('giftStuff').style.marginTop=-18;};l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])}else if(Game.onMenu=='stats'){var saveButton = document.createElement('div');saveButton.innerHTML = 'save';saveButton.style.fontSize = 20;saveButton.onclick = window['saveButton'];l('menu').childNodes[1].insertBefore(saveButton, l('menu').childNodes[1].firstChild);var loadButton = document.createElement('div');loadButton.innerHTML = 'load';loadButton.style.fontSize = 20;loadButton.onclick = window['loadButton'];l('menu').childNodes[1].appendChild(loadButton);}");
-		
+		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/"); //fixes all the images
+		str = str.replace("Game.toSave=true;e.preventDefault();", ""); //prevents ctrl+s to save (to prevent spamming the api)
+		str = str.replace('Game.toSave=true', "save()"); //makes the game save to the server everytime it saves for any reason
+		str = str.replace("Game.WritePrefButton('cookiesound", "//"); //remove the diffrent sound options for the cookie since there is no sound in this anyways
+		str = str.replace("Game.WriteSlider(", "//"); //removes the volume slider since there is no sound in this anyways
+		str = str.replaceAll("Game.prefs.autosave=", "//"); //removes autosaves (a diffrent implementation is used)
+		str = str.replaceAll('loc("Options', 'loc("Settings'); //changes the name of the 'options' tab to 'settings'
+		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//"); //adds the name of the user to verion display
+		str = str.replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", ""); //removes security against faking a click event on the cookie using code (there is some code that turns right click to left click for when i'm playing on my laptop)
+		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())		
 		Game.Launch = eval("(" + str + ")");
 		
 		if(useAPI) {
