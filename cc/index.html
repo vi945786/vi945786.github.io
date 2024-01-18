@@ -218,7 +218,8 @@ function checkGame() {
 		l('support').parentNode.removeChild(l('support'));
 		
 		str = Game.Launch.toString();
-		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/"); //fixes all the images
+		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/"); //fixes most the images
+		str = str.replace("this.domain='';", "this.domain='https://orteil.dashnet.org/cookieclicker/img/';") //fixes more image problems
 		str = str.replace("Game.toSave=true;e.preventDefault();", ""); //prevents ctrl+s to save (to prevent spamming the api)
 		str = str.replace('Game.toSave=true', "save()"); //makes the game save to the server everytime it saves for any reason
 		str = str.replace("Game.WritePrefButton('cookiesound", "//"); //remove the diffrent sound options for the cookie since there is no sound in this anyways
@@ -227,7 +228,9 @@ function checkGame() {
 		str = str.replaceAll('loc("Options', 'loc("Settings'); //changes the name of the 'options' tab to 'settings'
 		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//"); //adds the name of the user to verion display
 		str = str.replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", ""); //removes security against faking a click event on the cookie using code (there is some code that turns right click to left click for when i'm playing on my laptop)
-		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())		
+		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())
+		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
+		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
 		Game.Launch = eval("(" + str + ")");
 		
 		if(useAPI) {
