@@ -147,8 +147,7 @@ function loadButton() {
 
 function save() {
 	if(!useAPI) return;
-	getSave()
-	saveFile.savefile.game = save;
+	saveFile.savefile.game = getSave();
 	saveFile.save();
 }
 
