@@ -123,10 +123,11 @@ function loadButton() {
 }
 
 function save() {
-	if(!useAPI) return;
 	var saveCode = getSave();
-	saveFile.savefile.game = saveCode;
-	saveFile.save();
+	if(useAPI) {
+		saveFile.savefile.game = saveCode;
+		saveFile.save();
+	}
 	return saveCode;
 }
 
@@ -157,7 +158,17 @@ function replaceMenu() {
 		
 		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
 		 
-		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
+		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
+		
+		if(Game.Objects["Farm"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Farm"].amount == 0) {
+			l('focusFarm').parentNode.removeChild(l('focusFarm'))
+			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[2])
+		}
+		if(Game.Objects["Bank"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Bank"].amount == 0) {
+			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket'))
+			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.lastChild)
+		}
+		
 	}else if(Game.onMenu=='stats'){
 		var saveButton = document.createElement('div');
 		saveButton.innerHTML = 'save';
