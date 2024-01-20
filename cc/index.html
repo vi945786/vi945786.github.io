@@ -3,24 +3,10 @@
 
 <link rel="shortcut icon" href="https://orteil.dashnet.org/cookieclicker/img/favicon.ico">
 
+<script src="https://:cookiesaver-6dd8.restdb.io/assets/js/eventsource.min.js"></script>
+<script src="https://cookiesaver-6dd8.restdb.io/rest/_jsapi.js?plainjs=true"></script>
+
 <script>
-
-var password = prompt('password');
-var user = "";
-var database;
-
-while(user == "") {
-	if(password == "8659") {
-		user = "violet"
-	} else if(password == "mike") {
-		user = "mikael"
-	} else {
-		password = prompt('password'); 
-	}
-}
-
-if(user == "violet") database = "cookiesaver-6dd8"
-if(user == "mikael") database = "mikaelclicker-343b"
 
 var currentUrl = document.baseURI.split("/")
 currentUrl.pop()
@@ -29,7 +15,7 @@ currentUrl = currentUrl.join("/")
 var useAPI = (currentUrl == "https://vi945786.github.io/cc");
 var db;
 var saveFile;
-var saved = false;
+var saved = 0;
 
 var originalAppendChild = HTMLElement.prototype.appendChild;
 HTMLElement.prototype.appendChild = function(element) {
@@ -49,88 +35,79 @@ HTMLElement.prototype.appendChild = function(element) {
     return originalAppendChild.call(this, element);
 };
 
-addDatabaseScript(database);
-
-async function loadGame() {
-	try {
-		if(useAPI) {
-			var key;
-			if(user == "violet") key = "657af4b23fc01b465d5b055f"
-			if(user == "mikael") key = "65900ca4733e2c1cf8decae3"
+if(useAPI) {
 			
-			db = new restdb(key, {realtime: true})
+	db = new restdb("657af4b23fc01b465d5b055f", {realtime: true})
+	
+	db.on("SAVE", function(error, eventdata) {
+		if(saved != 0) {
+			saved--;
+			return;
+		}
+		Game.CloseNotes();
+		Game.ImportSaveCode(eventdata.data.game)
+	})
+	
+	window.addEventListener("beforeunload", function(event) {
 			
-			db.on("SAVE", function(error, eventdata) {
-				if(saved) {
-					saved = false
-					return;
-				}
-				Game.CloseNotes();
-				Game.ImportSaveCode(eventdata.data.game)
-			})
-			
-			window.addEventListener("beforeunload", function(event) {
-					
-				if(!db) return;
-				if(saveFile == undefined) return;
-				
-				save();
-				
-				var start = new Date().getTime();
-				var end = start;
-				while(end < start + 1500) {
-					end = new Date().getTime();
-				}
-				
-			});
+		if(!db) return;
+		if(saveFile == undefined) return;
+		
+		save();
+		
+		var start = new Date().getTime();
+		var end = start;
+		while(end < start + 1500) {
+			end = new Date().getTime();
 		}
 		
-		var doc = await getDoc();
-		
-		doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
-		doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+	});
+}
 
-		Array.prototype.slice.call(doc.getElementsByClassName("adBanner")).forEach(ad => {
-			ad.parentNode.removeChild(ad);
-		});
-		
-		Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
-			ad.parentNode.removeChild(ad);
-		});
-		
-		Array.prototype.slice.call(doc.getElementsByClassName("ifNoAds")).forEach(ad => {
-			ad.parentNode.removeChild(ad);
-		});
-		
-		document.head.innerHTML = "";
-		document.body.innerHTML = "";
-		
-		Array.prototype.slice.call(doc.body.childNodes).forEach(element => {
-			if(element.tagName === "SCRIPT") {
-				appendScript(element, document.body);
-			} else {
-				document.body.appendChild(element);
-			}
-		})
-		
-		Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
-			if(element.tagName === "SCRIPT") {
-				appendScript(element, document.head);
-			} else {
-				document.head.appendChild(element);
-			}
-		})
-		
-		checkGame();
-		checkLinks();
-		autoSave();
-	} catch(e) {
-		window.setTimeout(loadGame, 100)
-	}
-}	
+(async function() { 
+	var doc = await getDoc();
+	
+	doc.head.innerHTML = doc.head.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+	doc.body.innerHTML = doc.body.innerHTML.replaceAll("url(img/", "url(https://orteil.dashnet.org/cookieclicker/img/").replaceAll("file", "https");
+
+	Array.prototype.slice.call(doc.getElementsByClassName("adBanner")).forEach(ad => {
+		ad.parentNode.removeChild(ad);
+	});
+	
+	Array.prototype.slice.call(doc.getElementsByClassName("ad")).forEach(ad => {
+		ad.parentNode.removeChild(ad);
+	});
+	
+	Array.prototype.slice.call(doc.getElementsByClassName("ifNoAds")).forEach(ad => {
+		ad.parentNode.removeChild(ad);
+	});
+	
+	document.head.innerHTML = "";
+	document.body.innerHTML = "";
+	
+	Array.prototype.slice.call(doc.body.childNodes).forEach(element => {
+		if(element.tagName === "SCRIPT") {
+			appendScript(element, document.body);
+		} else {
+			document.body.appendChild(element);
+		}
+	})
+	
+	Array.prototype.slice.call(doc.head.childNodes).forEach(element => {
+		if(element.tagName === "SCRIPT") {
+			appendScript(element, document.head);
+		} else {
+			document.head.appendChild(element);
+		}
+	})
+	
+	checkGame();
+	checkLinks();
+	autoSave();
+})();
 
 function saveButton() {
-	saved=true
+	saved++;
 	save()
 	if(useAPI) {
 		db.publish('SAVE', {'game': getSave()}, function(error, result) {})
@@ -225,7 +202,6 @@ function checkGame() {
 		str = str.replace("Game.WriteSlider(", "//"); //removes the volume slider since there is no sound in this anyways
 		str = str.replaceAll("Game.prefs.autosave=", "//"); //removes autosaves (a diffrent implementation is used)
 		str = str.replaceAll('loc("Options', 'loc("Settings'); //changes the name of the 'options' tab to 'settings'
-		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version + '-' + user//"); //adds the name of the user to verion display
 		str = str.replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", ""); //removes security against faking a click event on the cookie using code (there is some code that turns right click to left click for when i'm playing on my laptop)
 		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
@@ -317,20 +293,6 @@ function fetchHtml(url) {
         .catch(error => {
             throw error;
         });
-}
-
-async function addDatabaseScript(database) {
-	var sources = ["https://:"+database+".restdb.io/assets/js/eventsource.min.js", "https://"+database+".restdb.io/rest/_jsapi.js?plainjs=true"]
-	
-	sources.forEach(source => {
-		var script = document.createElement("script");
-		script.src = source;
-		document.head.append(script);
-	});
-	
-	var script = document.createElement("script");
-	script.innerHTML = "loadGame()";
-	document.head.append(script);
 }
 
 function getSave() {
