@@ -165,8 +165,8 @@ function replaceMenu() {
 			l('focusFarm').parentNode.removeChild(l('focusFarm'))
 		}
 		if(Game.Objects["Bank"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Bank"].amount == 0) {
-			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket'))
 			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.lastChild)
+			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket'))
 		}
 		
 	}else if(Game.onMenu=='stats'){
