@@ -108,9 +108,9 @@ if(useAPI) {
 
 function saveButton() {
 	saved++;
-	save()
+	var saveCode = save()
 	if(useAPI) {
-		db.publish('SAVE', {'game': getSave()}, function(error, result) {})
+		db.publish('SAVE', {'game': saveCode}, function(error, result) {})
 	}
 }
 
@@ -124,8 +124,10 @@ function loadButton() {
 
 function save() {
 	if(!useAPI) return;
-	saveFile.savefile.game = getSave();
+	var saveCode = getSave();
+	saveFile.savefile.game = saveCode;
 	saveFile.save();
+	return saveCode;
 }
 
 var fixAjax=function(url, callback) {
