@@ -161,8 +161,8 @@ function replaceMenu() {
 		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 		
 		if(Game.Objects["Farm"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Farm"].amount == 0) {
+			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[3])
 			l('focusFarm').parentNode.removeChild(l('focusFarm'))
-			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[2])
 		}
 		if(Game.Objects["Bank"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Bank"].amount == 0) {
 			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket'))
@@ -214,7 +214,7 @@ function checkGame() {
 		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
 		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
-		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number (as it's now useless)
+		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number ()
 		Game.Launch = eval("(" + str + ")");
 		
 		if(useAPI) {
