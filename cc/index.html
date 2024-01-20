@@ -156,7 +156,8 @@ function replaceMenu() {
 		}
 		
 		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
-		l('menu').childNodes[2].childNodes[0].removeChild(l('menu').childNodes[2].childNodes[0].childNodes[0])
+		 
+		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 	}else if(Game.onMenu=='stats'){
 		var saveButton = document.createElement('div');
 		saveButton.innerHTML = 'save';
@@ -187,23 +188,17 @@ function checkGame() {
 		Game.local = false;
 		ajax = fixAjax;
 		AddEvent = fixAddEvent;
-		OldPlaySound = function(url,vol) {};
-		PlaySound = function(url,vol,pitchVar) {};
-		PlayMusicSound = function(url,vol,pitchVar) {};
 		
-		document.getElementsByClassName("subButton")[0].innerHTML="Settings"
 		l('bigCookie').addEventListener('contextmenu', event => {l('bigCookie').click();return event.preventDefault()});
 		l('support').parentNode.removeChild(l('support'));
+		
 		
 		str = Game.Launch.toString();
 		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/"); //fixes most the images
 		str = str.replace("this.domain='';", "this.domain='https://orteil.dashnet.org/cookieclicker/img/';") //fixes more image problems
 		str = str.replace("Game.toSave=true;e.preventDefault();", ""); //prevents ctrl+s to save (to prevent spamming the api)
 		str = str.replace('Game.toSave=true', "save()"); //makes the game save to the server everytime it saves for any reason
-		str = str.replace("Game.WritePrefButton('cookiesound", "//"); //remove the diffrent sound options for the cookie since there is no sound in this anyways
-		str = str.replace("Game.WriteSlider(", "//"); //removes the volume slider since there is no sound in this anyways
 		str = str.replaceAll("Game.prefs.autosave=", "//"); //removes autosaves (a diffrent implementation is used)
-		str = str.replaceAll('loc("Options', 'loc("Settings'); //changes the name of the 'options' tab to 'settings'
 		str = str.replace("|| now-Game.lastClick<1000/((e?e.detail:1)===0?3:50)", ""); //removes security against faking a click event on the cookie using code (there is some code that turns right click to left click for when i'm playing on my laptop)
 		str = str.replace("l('menu').innerHTML=str;", "l('menu').innerHTML=str;window['replaceMenu'].call()"); //changes the menu (see replaceMenu())
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
@@ -300,6 +295,168 @@ function fetchHtml(url) {
 function getSave() {
     Game.WriteSave()
     return localStorageGet("CookieClickerGame")
+}
+
+function focusLeft() {
+	l('rightBeam').style.visibility='hidden'
+	l('leftBeam').style.visibility='hidden'
+	l('sectionRight').style.visibility='hidden'
+	l('sectionMiddle').style.visibility='hidden'
+	l('sectionLeft').style.width='100%'
+	l('backgroundLeftCanvas').style.width='100%'
+	resize()
+	var a = document.createElement("a")
+	a.className = "option"
+	a.onclick = function(){unFocusLeft();PlaySound('snd/tick.mp3');}
+	a.innerHTML = "Go Back"
+	a.id = "backButton"
+	a.style = "position: absolute; z-index: 5;"
+	l('game').appendChild(a)
+}
+
+function unFocusLeft() {
+	l('rightBeam').style.visibility='visible'
+	l('leftBeam').style.visibility='visible'
+	l('sectionRight').style.visibility='visible'
+	l('sectionMiddle').style.visibility='visible'
+	l('sectionLeft').style.width=''
+	l('backgroundLeftCanvas').style.width=''
+	resize()
+	l('backButton').parentNode.removeChild(l('backButton'))
+}
+
+function focusFarm() {
+	Game.ShowMenu()
+	
+	window["miniGameOpen"] = Game.Objects["Farm"].onMinigame;
+	Game.Objects["Farm"].switchMinigame(true)
+	
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
+	
+	l('gardenBG').style.visibility='visible'
+	Array.from(l('gardenContent').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	
+	l('gardenBG').style.width='100%'
+	l('gardenBG').style.height=window.innerHeight-TopBarOffset
+	l('gardenBG').style.position='fixed'
+	l('gardenBG').style.top=TopBarOffset
+	l('gardenBG').style.left='0'
+	
+	l('gardenContent').style.width='100%'
+	l('gardenContent').style.height=window.innerHeight-TopBarOffset
+	l('gardenContent').style.position='fixed'
+	l('gardenContent').style.top=TopBarOffset
+	l('gardenContent').style.left='0'
+	
+	resize()
+	
+	var gardenSoilsTop = l('gardenSoils').getBoundingClientRect().top
+	var gardenInfoTop = l('gardenInfo').getBoundingClientRect().top
+	
+	
+	l('gardenPlotSize').style.top='35%'
+	l('gardenPlot').style.top='35%'
+	l('gardenInfo').style.top='35%'
+	
+	var gardenSoilsMoveDistance = l('gardenInfo').getBoundingClientRect().top+(gardenSoilsTop-gardenInfoTop)
+	l('gardenSoils').childNodes.forEach(node => node.style.top=gardenSoilsMoveDistance-gardenSoilsTop)
+	
+	var a = document.createElement("a")
+	a.className = "option"
+	a.onclick = function(){unFocusFarm();PlaySound('snd/tick.mp3');}
+	a.innerHTML = "Go Back"
+	a.id = "backButton"
+	a.style = "position: absolute; z-index: 5;"
+	l('game').appendChild(a)
+}   
+
+function unFocusFarm() {
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	
+	l('gardenBG').style.width=''
+	l('gardenBG').style.height=''
+	l('gardenBG').style.position=''
+	l('gardenBG').style.top=''
+	l('gardenBG').style.left=''
+	
+	l('gardenContent').style.width=''
+	l('gardenContent').style.height=''
+	l('gardenContent').style.position=''
+	l('gardenContent').style.top=''
+	l('gardenContent').style.left=''
+	
+	l('gardenPlotSize').style.top=''
+	l('gardenPlot').style.top=''
+	l('gardenInfo').style.top=''
+	
+	l('gardenSoils').childNodes.forEach(node => node.style.top='')
+	resize()
+
+	if(window["miniGameOpen"] == false) Game.Objects["Farm"].switchMinigame(0)
+	l('backButton').parentNode.removeChild(l('backButton'))
+}  
+
+function focusStockMarket() {
+	Game.ShowMenu()
+	window["miniGameOpen"] = Game.Objects["Bank"].onMinigame;
+	Game.Objects["Bank"].switchMinigame(1)
+	
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
+	
+	
+	l('bankBG').style.visibility='visible'
+	Array.from(l('bankContent').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	
+	l('bankBG').style.width='100%'
+	l('bankBG').style.height=window.innerHeight-TopBarOffset
+	l('bankBG').style.position='fixed'
+	l('bankBG').style.top=TopBarOffset
+	l('bankBG').style.left='0'
+	
+	l('bankContent').style.width='100%'
+	l('bankContent').style.height=window.innerHeight-TopBarOffset
+	l('bankContent').style.position='fixed'
+	l('bankContent').style.top=TopBarOffset
+	l('bankContent').style.left='0'
+	
+	resize()
+	
+	var a = document.createElement("a")
+	a.className = "option"
+	a.onclick = function(){unFocusStockMarket();PlaySound('snd/tick.mp3');}
+	a.innerHTML = "Go Back"
+	a.id = "backButton"
+	a.style = "position: absolute; z-index: 5;"
+	l('game').appendChild(a)
+}
+
+function unFocusStockMarket() {	
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	
+	l('bankBG').style.width=''
+	l('bankBG').style.height=''
+	l('bankBG').style.position=''
+	l('bankBG').style.top=''
+	l('bankBG').style.left=''
+	
+	l('bankContent').style.width=''
+	l('bankContent').style.height=''
+	l('bankContent').style.position=''
+	l('bankContent').style.top=''
+	l('bankContent').style.left=''
+	
+	resize()
+	
+	if(window["miniGameOpen"] == false) Game.Objects["Bank"].switchMinigame(0)
+	l('backButton').parentNode.removeChild(l('backButton'))
+}
+
+function resize() {
+	Game.resize();
+	Game.Background.canvas.width=Game.Background.canvas.parentNode.offsetWidth;
+	Game.Background.canvas.height=Game.Background.canvas.parentNode.offsetHeight;
+	Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
+	Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
 }
 
 </script>
