@@ -310,6 +310,8 @@ function getSave() {
 }
 
 function focusLeft() {
+	Array.from(l('sectionRight').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
+	Array.from(l('sectionMiddle').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
 	l('rightBeam').style.visibility='hidden'
 	l('leftBeam').style.visibility='hidden'
 	l('sectionRight').style.visibility='hidden'
@@ -328,6 +330,8 @@ function focusLeft() {
 }
 
 function unFocusLeft() {
+	Array.from(l('sectionRight').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	Array.from(l('sectionMiddle').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
 	l('rightBeam').style.visibility='visible'
 	l('leftBeam').style.visibility='visible'
 	l('sectionRight').style.visibility='visible'
@@ -409,7 +413,6 @@ function unFocusFarm() {
 	resize()
 
 	if(window["miniGameOpen"] == false) Game.Objects["Farm"].switchMinigame(0)
-	l('backButton').parentNode.removeChild(l('backButton'))
 	
 	l('versionNumber').onclick = null
 	l('versionNumber').onmouseover = null
@@ -466,7 +469,6 @@ function unFocusStockMarket() {
 	resize()
 	
 	if(window["miniGameOpen"] == false) Game.Objects["Bank"].switchMinigame(0)
-	l('backButton').parentNode.removeChild(l('backButton'))
 	
 	l('versionNumber').onclick = null
 	l('versionNumber').onmouseover = null
