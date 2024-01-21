@@ -149,6 +149,11 @@ var fixAddEvent=function(el,ev,func) {
 	return false;
 }
 
+function appendChildToMenu(child, menu) {
+	l(menu).appendChild(new DOMParser().parseFromString(child, "text/html").body.firstChild)
+	l(menu).appendChild(document.createElement('br'))
+}
+
 function replaceMenu() {
 	if(Game.onMenu=='prefs') {
 		if(Game.Has('Wrapping paper') && Game.ascensionMode == 0) {
@@ -158,15 +163,16 @@ function replaceMenu() {
 		
 		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
 		 
-		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusUpgrades();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Upgrades</a><br><a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
+		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Focus Window</div><div id="focusWindow" class="listing"></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 		
-		if(Game.Objects["Farm"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Farm"].amount == 0) {
-			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[5])
-			l('focusFarm').parentNode.removeChild(l('focusFarm'))
+		appendChildToMenu('<a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a>', 'focusWindow')
+		appendChildToMenu('<a style="width:250px;text-align:right;" class="option" onclick="focusUpgrades();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Upgrades</a>', 'focusWindow')
+		
+		if(Game.Objects["Farm"].level != 0 && Game.ascensionMode == 0 && Game.Objects["Farm"].amount != 0) {
+			appendChildToMenu('<a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a>', 'focusWindow')
 		}
-		if(Game.Objects["Bank"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Bank"].amount == 0) {
-			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket').parentNode.lastChild)
-			l('focusStockMarket').parentNode.removeChild(l('focusStockMarket'))
+		if(Game.Objects["Bank"].level != 0 && Game.ascensionMode == 0 && Game.Objects["Bank"].amount != 0) {
+			appendChildToMenu('<a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a>', 'focusWindow')
 		}
 		
 	}else if(Game.onMenu=='stats'){
@@ -349,7 +355,7 @@ function unFocusLeft() {
 }
 
 function focusFarm() {
-	Game.ShowMenu()
+	closeMenu()
 	
 	window["miniGameOpen"] = Game.Objects["Farm"].onMinigame;
 	Game.Objects["Farm"].switchMinigame(true)
@@ -418,10 +424,13 @@ function unFocusFarm() {
 	l('versionNumber').onmouseover = null
 	l('versionNumber').onmouseleave = null
 	l('versionNumber').style.color='#ffffff'
+	
+	openMenu()
 }  
 
 function focusStockMarket() {
-	Game.ShowMenu()
+	closeMenu()
+	
 	window["miniGameOpen"] = Game.Objects["Bank"].onMinigame;
 	Game.Objects["Bank"].switchMinigame(1)
 	
@@ -474,6 +483,8 @@ function unFocusStockMarket() {
 	l('versionNumber').onmouseover = null
 	l('versionNumber').onmouseleave = null
 	l('versionNumber').style.color='#ffffff'
+	
+	openMenu()
 }
 
 function focusUpgrades() {
@@ -520,6 +531,25 @@ function resize() {
 	Game.Background.canvas.height=Game.Background.canvas.parentNode.offsetHeight;
 	Game.LeftBackground.canvas.width=Game.LeftBackground.canvas.parentNode.offsetWidth;
 	Game.LeftBackground.canvas.height=Game.LeftBackground.canvas.parentNode.offsetHeight;
+}
+
+function closeMenu() {
+	Game.removeClass('onMenu')
+	Game.onMenu=''
+	l('prefsButton').className='panelButton'
+	Game.UpdateMenu();
+	for (var i in Game.Objects)
+	{
+		var me=Game.Objects[i];
+		if (me.minigame && me.minigame.onResize) me.minigame.onResize();
+	}
+}
+
+function openMenu() {
+	Game.addClass('onMenu');
+	Game.onMenu='prefs'
+	l('prefsButton').className='panelButton selected'
+	Game.UpdateMenu();
 }
 
 </script>
