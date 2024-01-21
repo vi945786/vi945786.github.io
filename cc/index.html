@@ -324,6 +324,7 @@ function focusLeft() {
 	a.id = "backButton"
 	a.style = "position: absolute; z-index: 5;"
 	l('game').appendChild(a)
+	productLevel0.style.visibility = 'hidden'
 }
 
 function unFocusLeft() {
@@ -335,6 +336,7 @@ function unFocusLeft() {
 	l('backgroundLeftCanvas').style.width=''
 	resize()
 	l('backButton').parentNode.removeChild(l('backButton'))
+	productLevel0.style.visibility = 'visible'
 }
 
 function focusFarm() {
@@ -380,6 +382,8 @@ function focusFarm() {
 	a.id = "backButton"
 	a.style = "position: absolute; z-index: 5;"
 	l('game').appendChild(a)
+	
+	l('versionNumber').style.visibility = 'visible'
 }   
 
 function unFocusFarm() {
@@ -440,6 +444,8 @@ function focusStockMarket() {
 	a.id = "backButton"
 	a.style = "position: absolute; z-index: 5;"
 	l('game').appendChild(a)
+	
+	l('versionNumber').style.visibility = 'visible'
 }
 
 function unFocusStockMarket() {	
