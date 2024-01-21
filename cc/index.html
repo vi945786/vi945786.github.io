@@ -158,10 +158,10 @@ function replaceMenu() {
 		
 		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
 		 
-		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
+		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Easy Access</div><div class="listing"><a style="width:250px;text-align:right;" class="option" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Big Cookie</a><br><a style="width:250px;text-align:right;" class="option" onclick="focusUpgrades();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Upgrades</a><br><a id="focusFarm" style="width:250px;text-align:right;" class="option" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Farm</a><br><a id="focusStockMarket" style="width:250px;text-align:right;" class="option" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">Focus The Window On The Stock Market</a><br></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 		
 		if(Game.Objects["Farm"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Farm"].amount == 0) {
-			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[3])
+			l('focusFarm').parentNode.removeChild(l('focusFarm').parentNode.childNodes[5])
 			l('focusFarm').parentNode.removeChild(l('focusFarm'))
 		}
 		if(Game.Objects["Bank"].level == 0 || Game.ascensionMode != 0 || Game.Objects["Bank"].amount == 0) {
@@ -316,15 +316,15 @@ function focusLeft() {
 	l('sectionMiddle').style.visibility='hidden'
 	l('sectionLeft').style.width='100%'
 	l('backgroundLeftCanvas').style.width='100%'
+
 	resize()
-	var a = document.createElement("a")
-	a.className = "option"
-	a.onclick = function(){unFocusLeft();PlaySound('snd/tick.mp3');}
-	a.innerHTML = "Go Back"
-	a.id = "backButton"
-	a.style = "position: absolute; z-index: 5;"
-	l('game').appendChild(a)
-	productLevel0.style.visibility = 'hidden'
+	
+	l('productLevel0').style.visibility = 'hidden'
+	
+	l('versionNumber').onclick = function(){unFocusLeft();PlaySound('snd/tick.mp3');}
+	l('versionNumber').style.visibility = 'visible'
+	l('versionNumber').onmouseover = function(){l('versionNumber').style.color='#888888'};
+	l('versionNumber').onmouseleave = function(){l('versionNumber').style.color='#ffffff'};
 }
 
 function unFocusLeft() {
@@ -335,8 +335,13 @@ function unFocusLeft() {
 	l('sectionLeft').style.width=''
 	l('backgroundLeftCanvas').style.width=''
 	resize()
-	l('backButton').parentNode.removeChild(l('backButton'))
-	productLevel0.style.visibility = 'visible'
+	
+	l('productLevel0').style.visibility = 'visible'
+	
+	l('versionNumber').onclick = null
+	l('versionNumber').onmouseover = null
+	l('versionNumber').onmouseleave = null
+	l('versionNumber').style.color='#ffffff'
 }
 
 function focusFarm() {
@@ -374,16 +379,11 @@ function focusFarm() {
 	
 	var gardenSoilsMoveDistance = l('gardenInfo').getBoundingClientRect().top+(gardenSoilsTop-gardenInfoTop)
 	l('gardenSoils').childNodes.forEach(node => node.style.top=gardenSoilsMoveDistance-gardenSoilsTop)
-	
-	var a = document.createElement("a")
-	a.className = "option"
-	a.onclick = function(){unFocusFarm();PlaySound('snd/tick.mp3');}
-	a.innerHTML = "Go Back"
-	a.id = "backButton"
-	a.style = "position: absolute; z-index: 5;"
-	l('game').appendChild(a)
-	
+
+	l('versionNumber').onclick = function(){unFocusFarm();PlaySound('snd/tick.mp3');}
 	l('versionNumber').style.visibility = 'visible'
+	l('versionNumber').onmouseover = function(){l('versionNumber').style.color='#888888'};
+	l('versionNumber').onmouseleave = function(){l('versionNumber').style.color='#ffffff'};
 }   
 
 function unFocusFarm() {
@@ -410,6 +410,11 @@ function unFocusFarm() {
 
 	if(window["miniGameOpen"] == false) Game.Objects["Farm"].switchMinigame(0)
 	l('backButton').parentNode.removeChild(l('backButton'))
+	
+	l('versionNumber').onclick = null
+	l('versionNumber').onmouseover = null
+	l('versionNumber').onmouseleave = null
+	l('versionNumber').style.color='#ffffff'
 }  
 
 function focusStockMarket() {
@@ -437,15 +442,10 @@ function focusStockMarket() {
 	
 	resize()
 	
-	var a = document.createElement("a")
-	a.className = "option"
-	a.onclick = function(){unFocusStockMarket();PlaySound('snd/tick.mp3');}
-	a.innerHTML = "Go Back"
-	a.id = "backButton"
-	a.style = "position: absolute; z-index: 5;"
-	l('game').appendChild(a)
-	
+	l('versionNumber').onclick = function(){unFocusStockMarket();PlaySound('snd/tick.mp3');}
 	l('versionNumber').style.visibility = 'visible'
+	l('versionNumber').onmouseover = function(){l('versionNumber').style.color='#888888'};
+	l('versionNumber').onmouseleave = function(){l('versionNumber').style.color='#ffffff'};
 }
 
 function unFocusStockMarket() {	
@@ -467,6 +467,49 @@ function unFocusStockMarket() {
 	
 	if(window["miniGameOpen"] == false) Game.Objects["Bank"].switchMinigame(0)
 	l('backButton').parentNode.removeChild(l('backButton'))
+	
+	l('versionNumber').onclick = null
+	l('versionNumber').onmouseover = null
+	l('versionNumber').onmouseleave = null
+	l('versionNumber').style.color='#ffffff'
+}
+
+function focusUpgrades() {
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
+	
+	Array.from(l('upgrades').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+
+    l('upgrades').style.visibility='visible'
+	l('upgrades').style.width='100%'
+	l('upgrades').style.height=window.innerHeight-TopBarOffset
+	l('upgrades').style.position='fixed'
+	l('upgrades').style.top=TopBarOffset
+	l('upgrades').style.left='0'
+	
+	resize()
+	
+	l('versionNumber').onclick = function(){unFocusUpgrades();PlaySound('snd/tick.mp3');}
+	l('versionNumber').style.visibility = 'visible'
+	l('versionNumber').onmouseover = function(){l('versionNumber').style.color='#888888'};
+	l('versionNumber').onmouseleave = function(){l('versionNumber').style.color='#ffffff'};
+}
+
+function unFocusUpgrades() {
+	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+
+    l('upgrades').style.visibility=''
+	l('upgrades').style.width=''
+	l('upgrades').style.height=''
+	l('upgrades').style.position=''
+	l('upgrades').style.top=''
+	l('upgrades').style.left=''
+	
+	resize()
+	
+	l('versionNumber').onclick = null
+	l('versionNumber').onmouseover = null
+	l('versionNumber').onmouseleave = null
+	l('versionNumber').style.color='#ffffff'
 }
 
 function resize() {
