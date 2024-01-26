@@ -196,8 +196,7 @@ function appendChildToMenu(child, menu) {
 function replaceMenu() {
 	if(Game.onMenu=='prefs') {
 		if(Game.Has('Wrapping paper') && Game.ascensionMode == 0) {
-			l('menu').childNodes[3].childNodes[0].insertBefore(l('giftStuff'),l('menu').childNodes[3].childNodes[0].childNodes[1]);
-			l('giftStuff').style.marginTop=-18;
+			l('menu').childNodes[3].childNodes[0].childNodes[0].append(l('giftStuff'));
 		}
 		
 		l('menu').removeChild(l('menu').getElementsByClassName('block')[0]);
@@ -238,7 +237,23 @@ function replaceMenu() {
 		div=document.createElement('div');
 		div.appendChild(loadButton);
 		div.style='display:flex;justify-content:center;align-items:center';l('menu').childNodes[1].appendChild(div);
+		
+		var div = document.createElement("div")
+		div.className = "listing"
+		div.innerHTML = "<b>Heralds:</b> " + Game.heralds
+		l('menu').childNodes[2].childNodes[1].appendChild(div)
 	}
+}
+
+function replaceAtEnd() {
+	var str = Game.Init.toString();
+	
+	var end = "";
+	end += "l('topBar').parentNode.removeChild(l('topBar'));"
+	end += "l('game').style.top = 0;"
+	end += "resize();"
+	
+	Game.Init = eval("(" + str.slice(0, -1) + end + "})")
 }
 
 function checkGame() {
@@ -263,7 +278,12 @@ function checkGame() {
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
 		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
 		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number ()
-		Game.Launch = eval("(" + str + ")");
+		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'there are currently ${Game.heralds} heralds')
+		
+		var end = "";
+		end += "replaceAtEnd()"
+		
+		Game.Launch = eval("(" + str.slice(0, -1) + end + "})");
 		
 		if(useAPI) {
 			localStorageSet("CookieClickerLang", "EN")
