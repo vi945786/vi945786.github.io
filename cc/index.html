@@ -278,7 +278,7 @@ function checkGame() {
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
 		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
 		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number ()
-		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'there are currently ${Game.heralds} heralds')
+		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'Look at \\"General\\" section of the statistics page to see how many heralds are active at any given time')
 		
 		var end = "";
 		end += "replaceAtEnd()"
@@ -431,17 +431,19 @@ function focusFarm() {
 	
 	l('gardenBG').style.visibility='visible'
 	Array.from(l('gardenContent').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	Array.from(document.getElementsByClassName('shimmer')).forEach(node => node.style.visibility='visible')
+	tooltip.style.visibility = 'visible'
 	
 	l('gardenBG').style.width='100%'
-	l('gardenBG').style.height=window.innerHeight-TopBarOffset
+	l('gardenBG').style.height=window.innerHeight
 	l('gardenBG').style.position='fixed'
-	l('gardenBG').style.top=TopBarOffset
+	l('gardenBG').style.top='0'
 	l('gardenBG').style.left='0'
 	
 	l('gardenContent').style.width='100%'
-	l('gardenContent').style.height=window.innerHeight-TopBarOffset
+	l('gardenContent').style.height=window.innerHeight
 	l('gardenContent').style.position='fixed'
-	l('gardenContent').style.top=TopBarOffset
+	l('gardenContent').style.top='0'
 	l('gardenContent').style.left='0'
 	
 	resize()
@@ -494,21 +496,22 @@ function focusStockMarket() {
 	Game.Objects["Bank"].switchMinigame(1)
 	
 	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
-	
+	Array.from(document.getElementsByClassName('shimmer')).forEach(node => node.style.visibility='visible')
+	tooltip.style.visibility = 'visible'
 	
 	l('bankBG').style.visibility='visible'
 	Array.from(l('bankContent').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
 	
 	l('bankBG').style.width='100%'
-	l('bankBG').style.height=window.innerHeight-TopBarOffset
+	l('bankBG').style.height=window.innerHeight
 	l('bankBG').style.position='fixed'
-	l('bankBG').style.top=TopBarOffset
+	l('bankBG').style.top='0'
 	l('bankBG').style.left='0'
 	
 	l('bankContent').style.width='100%'
-	l('bankContent').style.height=window.innerHeight-TopBarOffset
+	l('bankContent').style.height=window.innerHeight
 	l('bankContent').style.position='fixed'
-	l('bankContent').style.top=TopBarOffset
+	l('bankContent').style.top='0'
 	l('bankContent').style.left='0'
 	
 	resize()
@@ -558,20 +561,21 @@ function focusTemple() {
 	
 	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
 	
-	
 	l('templeBG').style.visibility='visible'
 	Array.from(l('templeContent').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	Array.from(document.getElementsByClassName('shimmer')).forEach(node => node.style.visibility='visible')
+	tooltip.style.visibility = 'visible'
 	
 	l('templeBG').style.width='100%'
-	l('templeBG').style.height=window.innerHeight-TopBarOffset
+	l('templeBG').style.height=window.innerHeight
 	l('templeBG').style.position='fixed'
-	l('templeBG').style.top=TopBarOffset
+	l('templeBG').style.top='0'
 	l('templeBG').style.left='0'
 	
 	l('templeContent').style.width='100%'
-	l('templeContent').style.height=window.innerHeight-TopBarOffset
+	l('templeContent').style.height=window.innerHeight
 	l('templeContent').style.position='fixed'
-	l('templeContent').style.top=TopBarOffset
+	l('templeContent').style.top='0'
 	l('templeContent').style.left='0'
 	
 	resize()
@@ -617,12 +621,14 @@ function focusUpgrades() {
 	Array.from(l('game').getElementsByTagName("*")).forEach(node => node.style.visibility='hidden')
 	
 	Array.from(l('upgrades').getElementsByTagName("*")).forEach(node => node.style.visibility='visible')
+	Array.from(document.getElementsByClassName('shimmer')).forEach(node => node.style.visibility='visible')
+	tooltip.style.visibility = 'visible'
 
     l('upgrades').style.visibility='visible'
 	l('upgrades').style.width='100%'
-	l('upgrades').style.height=window.innerHeight-TopBarOffset
+	l('upgrades').style.height=window.innerHeight
 	l('upgrades').style.position='fixed'
-	l('upgrades').style.top=TopBarOffset
+	l('upgrades').style.top='0'
 	l('upgrades').style.left='0'
 	
 	resize()
