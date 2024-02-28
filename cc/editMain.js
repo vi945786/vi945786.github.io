@@ -101,7 +101,7 @@ function replaceMenu() {
 		//addUtilsMenu
 		l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Utils</div><div id="Utils" class="listing"></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 		
-		appendChildToMenu('<a class="option smallFancyButton" onclick="Game.CollectWrinklers();PlaySound(\'snd/tick.mp3\');">Explodes All Wrinklers</a>', 'Utils')
+		appendChildToMenu('<a class="option smallFancyButton" onclick="Game.CollectWrinklers();PlaySound(\'snd/tick.mp3\');">Pops All Wrinklers</a>', 'Utils')
 		appendChildToMenu('<a class="option smallFancyButton" onclick="Game.WriteSave();Game.ExportSave();PlaySound(\'snd/tick.mp3\');">Export Same</a>', 'Utils')
 		
 	}else if(Game.onMenu=='stats'){
