@@ -248,6 +248,7 @@ function replaceAtEnd() {
 	var str = Game.Init.toString();
 	
 	var end = "";
+	end += "TopBarOffset = 0;"
 	end += "l('topBar').parentNode.removeChild(l('topBar'));"
 	end += "l('game').style.top = 0;"
 	end += "resize();"
