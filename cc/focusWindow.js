@@ -1,16 +1,16 @@
 function addFocusWindowMenu() {
 	l('menu').insertBefore(new DOMParser().parseFromString('<div class="block" style="padding:0px;margin:8px 4px;"><div class="subsection" style="padding:0px;"><div class="title">Focus Window On:</div><div id="focusWindow" class="listing"></div></div>', "text/html").body.firstChild, l('menu').lastChild)
 		
-	appendChildToMenu('<a class="option smallFancyButton" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">The Big Cookie</a>', 'focusWindow')
+	appendChildToMenu('<a class="option smallFancyButton" onclick="focusLeft();PlaySound(\'snd/tick.mp3\');">The big cookie</a>', 'focusWindow')
 	
 	if(Game.Objects["Farm"].level != 0 && Game.ascensionMode == 0 && Game.Objects["Farm"].amount != 0) {
-		appendChildToMenu('<a class="option smallFancyButton" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">The Farm</a>', 'focusWindow')
+		appendChildToMenu('<a class="option smallFancyButton" onclick="focusFarm();PlaySound(\'snd/tick.mp3\');">The farm</a>', 'focusWindow')
 	}
 	if(Game.Objects["Bank"].level != 0 && Game.ascensionMode == 0 && Game.Objects["Bank"].amount != 0) {
-		appendChildToMenu('<a class="option smallFancyButton" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">The Stock Market</a>', 'focusWindow')
+		appendChildToMenu('<a class="option smallFancyButton" onclick="focusStockMarket();PlaySound(\'snd/tick.mp3\');">The stock market</a>', 'focusWindow')
 	}
 	if(Game.Objects["Temple"].level != 0 && Game.ascensionMode == 0 && Game.Objects["Temple"].amount != 0) {
-		appendChildToMenu('<a class="option smallFancyButton" onclick="focusTemple();PlaySound(\'snd/tick.mp3\');">The Pantheon</a>', 'focusWindow')
+		appendChildToMenu('<a class="option smallFancyButton" onclick="focusTemple();PlaySound(\'snd/tick.mp3\');">The pantheon</a>', 'focusWindow')
 	}
 }
 
