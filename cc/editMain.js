@@ -210,7 +210,6 @@ function checkGame() {
 		l('bigCookie').addEventListener('contextmenu', event => {l('bigCookie').click();return event.preventDefault()});
 		l('support').parentNode.removeChild(l('support'));
 		
-		
 		str = Game.Launch.toString();
 		str = str.replaceAll('url(img/', "url(https://orteil.dashnet.org/cookieclicker/img/"); //fixes most the images
 		str = str.replace("this.domain='';", "this.domain='https://orteil.dashnet.org/cookieclicker/img/';") //fixes more image problems
@@ -222,12 +221,16 @@ function checkGame() {
 		str = str.replace("if (!quick) quick=6;", "if (!quick) quick=6;if(title == 'Achievement unlocked') quick=0") //makes achievement notifications stay forever even on short notifications mode
 		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
 		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number ()
-		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'Look at \\"General\\" section of the statistics page to see how many heralds are active at any given time')
-		str = str.replace("l('storeBulkMax').style.visibility='hidden", "l('storeBulkMax').style.visibility='visible")
-		str = str.replace('loc("all")', '"max"')
-		str = str.replace("if (Game.buyMode==1 && Game.buyBulk==-1)", "//")
-		str = str.replace("(Game.buyBulk>1)?('x'+Game.buyBulk+' '):''", "'x' + ((Game.buyBulk!=-1)?(Game.buyBulk):((Game.buyMode==1)?(getMaxBulkBuy(this)):(me.amount))) + ' '")
-		str = str.replaceAll('(Game.buyMode==1 && Game.cookies>=price) || (Game.buyMode==-1 && me.amount>0)', '(Game.buyBulk==-1)?(me.getSumPrice(1)<=Game.cookies):((Game.buyMode==1&&Game.cookies>=price)||(Game.buyMode==-1&&me.amount>0))')
+		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'Look at \\"General\\" section of the statistics page to see how many heralds are active at any given time');
+		str = str.replace("l('storeBulkMax').style.visibility='hidden", "l('storeBulkMax').style.visibility='visible");
+		str = str.replace('loc("all")', '"max"');
+		str = str.replace("if (Game.buyMode==1 && Game.buyBulk==-1)", "//");
+		str = str.replace("(Game.buyBulk>1)?('x'+Game.buyBulk+' '):''", "'x' + ((Game.buyBulk!=-1)?(Game.buyBulk):((Game.buyMode==1)?(getMaxBulkBuy(this)):(me.amount))) + ' '");
+		str = str.replaceAll('(Game.buyMode==1 && Game.cookies>=price) || (Game.buyMode==-1 && me.amount>0)', '(Game.buyBulk==-1)?(me.getSumPrice(1)<=Game.cookies):((Game.buyMode==1&&Game.cookies>=price)||(Game.buyMode==-1&&me.amount>0))');
+		str = str.replace("if (Game.keys[17]) Game.buyBulk=10;", "if (Game.keys[17]) Game.buyBulk=10;if (Game.keys[18]) Game.buyBulk=-1;");
+		str = str.replace("Game.keys[16] || Game.keys[17]", "Game.keys[16] || Game.keys[17] || Game.keys[18]");
+		str = str.replace("!Game.keys[16] && !Game.keys[17]", "!Game.keys[16] && !Game.keys[17] && !Game.keys[18]");
+		str = str.replace("%1 to bulk-buy or sell %2 of a building at a time, or %3 for %4", "<b>Ctrl</b> to bulk-buy or sell <b>10</b> of a building at a time, or <b>Shift</b> for <b>100</b> and <b>Alt</b> for <b>max</b>")
 		
 		var end = "";
 		end += "replaceAtEnd()"
