@@ -133,16 +133,71 @@ function replaceMenu() {
 	}
 }
 
+function getMaxBulkBuy(object) {
+	if(object.getSumPrice(1) > Game.cookies) return 0;
+	var lastI = 0;
+	var i = 1;
+	while(object.getSumPrice(i) <= Game.cookies) {
+		lastI = i;
+		i *= 2;
+	}
+	while(!(object.getSumPrice(i) <= Game.cookies && object.getSumPrice(i+1) > Game.cookies)) {
+		if(object.getSumPrice(i) > Game.cookies) {
+			var tempI = i
+			i -= Math.round((Math.max(i,lastI) - Math.min(i,lastI))/2)
+			lastI = tempI;
+		} else {
+			var tempI = i
+			i += Math.round((Math.max(i,lastI) - Math.min(i,lastI))/2)
+			lastI = tempI;
+		}
+	}
+	return i;
+}
+
 function replaceAtEnd() {
-	var str = Game.Init.toString();
-	
 	var end = "";
 	end += "TopBarOffset = 0;"
 	end += "l('topBar').parentNode.removeChild(l('topBar'));"
 	end += "l('game').style.top = 0;"
 	end += "resize();"
+	end += "\n(" + 
 	
-	Game.Init = eval("(" + str.slice(0, -1) + end + "})")
+	(function() {
+		for(var i = 0;i < Game.ObjectsN;i++) {
+			Game.ObjectsById[i].buy=function(amount) {
+				if (Game.buyMode==-1) {this.sell(Game.buyBulk,1);return 0;}
+				if (!amount) amount=Game.buyBulk;
+				if (amount==-1) {
+					amount = getMaxBulkBuy(this);
+				}
+				if(this.bulkPrice > Game.cookies) return;
+				Game.Spend(this.bulkPrice);
+				this.amount += amount;
+				this.bought += amount;
+				if (this.buyFunction) this.buyFunction();
+				Game.recalculateGains=1;
+				if (this.amount==1 && this.id!=0) l('row'+this.id).classList.add('enabled');
+				this.highest=Math.max(this.highest,this.amount);
+				Game.BuildingsOwned += amount;
+				PlaySound('snd/buy'+choose([1,2,3,4])+'.mp3',0.75);this.refresh();
+			}
+			Game.ObjectsById[i].refresh=function() {
+				this.price=this.getPrice();
+				var amount = Game.buyBulk;
+				if (amount==-1) amount = getMaxBulkBuy(this);
+				if (Game.buyMode==1) this.bulkPrice=this.getSumPrice(amount);
+				else if (Game.buyMode==-1) this.bulkPrice=this.getReverseSumPrice(amount);
+				this.rebuild();
+				if (this.amount==0 && this.id!=0) l('row'+this.id).classList.remove('enabled');
+				else if (this.amount>0 && this.id!=0) l('row'+this.id).classList.add('enabled');
+				if (this.muted>0 && this.id!=0) {l('row'+this.id).classList.add('muted');l('mutedProduct'+this.id).style.display='inline-block';}
+				else if (this.id!=0) {l('row'+this.id).classList.remove('muted');l('mutedProduct'+this.id).style.display='none';}
+			}
+		}
+	}).toString() + ")()";
+		
+	Game.Init = eval("(" + Game.Init.toString().slice(0, -1) + end + "})")
 }
 
 function checkGame() {
@@ -168,6 +223,11 @@ function checkGame() {
 		str = str.replace("quick=Math.min(6,quick)", "quick=Math.min(3,quick)") //makes notifications disappear even faster on short notifications mode
 		str = str.replace("l('versionNumber').innerHTML='v. '+Game.version", "l('versionNumber').innerHTML='v. '+Game.version//"); //removes the lock icon next to the version number ()
 		str = str.replace('Look on the purple flag at the top to see how many heralds are active at any given time', 'Look at \\"General\\" section of the statistics page to see how many heralds are active at any given time')
+		str = str.replace("l('storeBulkMax').style.visibility='hidden", "l('storeBulkMax').style.visibility='visible")
+		str = str.replace('loc("all")', '"max"')
+		str = str.replace("if (Game.buyMode==1 && Game.buyBulk==-1)", "//")
+		str = str.replace("(Game.buyBulk>1)?('x'+Game.buyBulk+' '):''", "'x' + ((Game.buyBulk!=-1)?(Game.buyBulk):((Game.buyMode==1)?(getMaxBulkBuy(this)):(me.amount))) + ' '")
+		str = str.replaceAll('(Game.buyMode==1 && Game.cookies>=price) || (Game.buyMode==-1 && me.amount>0)', '(Game.buyBulk==-1)?(me.getSumPrice(1)<=Game.cookies):((Game.buyMode==1&&Game.cookies>=price)||(Game.buyMode==-1&&me.amount>0))')
 		
 		var end = "";
 		end += "replaceAtEnd()"
