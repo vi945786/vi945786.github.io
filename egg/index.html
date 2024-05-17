@@ -26,6 +26,7 @@ var egg = document.getElementById("egg");
 var num = document.getElementById("num")
 
 num.innerHTML = document.cookie
+win()
 
 egg.oncontextmenu = function(event) {
     event.preventDefault();
@@ -60,6 +61,10 @@ function changeNum() {
 	if(Icookie < 0) document.cookie = 0
 	if(Icookie != 0) num.innerHTML = document.cookie
 	
+	win()
+}
+
+function win() {
 	if(document.cookie == 0) {
 		num.innerHTML = "YOU WIN!!!"
 		num.style.color = "#d3af37"
