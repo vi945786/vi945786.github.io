@@ -16,7 +16,9 @@ img {
 
 addEventListener("DOMContentLoaded", (event) => {
 var startNum = 10
+alert(document.cookie)
 if(document.cookie == "") document.cookie = 0
+alert(document.cookie)
 
 var egg = document.getElementById("egg")
 var num = document.getElementById("num")
@@ -61,7 +63,7 @@ function changeNum() {
 	num2.innerHTML = Icookie
 	if((startNum - Icookie) <= 0) Icookie = 0
 	if(Icookie != 0) num.innerHTML = startNum - Icookie
-	
+	alert(document.cookie)
 	
 	win()
 }
