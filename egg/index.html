@@ -7,7 +7,7 @@ img {
 }
 
 * {
-  touch-action: manipulation;
+	touch-action: manipulation;
 }
 
 </style>
@@ -17,9 +17,9 @@ img {
 addEventListener("DOMContentLoaded", (event) => {
 var startNum = 10
 
-alert(document.cookie.split(";")[0])
-if(!isNaN(document.cookie.split(";")[0])) document.cookie = 0
-alert(document.cookie.split(";")[0])
+alert(parseInt(document.cookie.split(";")[0]))
+if(!isNaN(parseInt(document.cookie.split(";")[0]))) document.cookie = 0
+alert(parseInt(document.cookie.split(";")[0]))
 
 var egg = document.getElementById("egg")
 var num = document.getElementById("num")
@@ -69,7 +69,7 @@ function changeNum() {
 }
 
 function win() {
-	if((startNum - document.cookie.split(";")[0]) <= 0) {
+	if((startNum - parseInt(document.cookie.split(";")[0])) <= 0) {
 		num.innerHTML = "YOU WIN!!!"
 		num.style.color = "#d3af37"
 		num2.style.visibility = "visible"
