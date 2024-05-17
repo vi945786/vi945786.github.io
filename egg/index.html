@@ -16,9 +16,9 @@ img {
 
 addEventListener("DOMContentLoaded", (event) => {
 var startNum = 10
-alert(document.cookie)
+alert(document.cookie.split(";")[0])
 if(document.cookie == "") document.cookie = 0
-alert(document.cookie)
+alert(document.cookie.split(";")[0]))
 
 var egg = document.getElementById("egg")
 var num = document.getElementById("num")
