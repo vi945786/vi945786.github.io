@@ -16,16 +16,15 @@ img {
 
 addEventListener("DOMContentLoaded", (event) => {
 var startNum = 10
-alert(document.cookie.split(";")[0])
-if(document.cookie == "") document.cookie = 0
-alert(document.cookie.split(";")[0])
+
+if(!isNaN(document.cookie.split(";")[0])) document.cookie = 0
 
 var egg = document.getElementById("egg")
 var num = document.getElementById("num")
 var num2 = document.getElementById("num2")
 
-num.innerHTML = startNum - document.cookie
-num2.innerHTML = document.cookie
+num.innerHTML = startNum - document.cookie.split(";")[0]
+num2.innerHTML = document.cookie.split(";")[0]
 win()
 
 
@@ -57,19 +56,18 @@ function up() {
 }
 
 function changeNum() {
-	var Icookie = parseInt(document.cookie) +1
+	var Icookie = parseInt(document.cookie.split(";")[0]) +1
 
 	document.cookie = Icookie
 	num2.innerHTML = Icookie
 	if((startNum - Icookie) <= 0) Icookie = 0
 	if(Icookie != 0) num.innerHTML = startNum - Icookie
-	alert(document.cookie)
 	
 	win()
 }
 
 function win() {
-	if((startNum - document.cookie) <= 0) {
+	if((startNum - document.cookie.split(";")[0]) <= 0) {
 		num.innerHTML = "YOU WIN!!!"
 		num.style.color = "#d3af37"
 		num2.style.visibility = "visible"
