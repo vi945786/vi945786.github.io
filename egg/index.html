@@ -53,9 +53,11 @@ function up() {
 }
 
 function changeNum() {
-	document.cookie--
-	if(document.cookie < 0) document.cookie = 0
-	if(document.cookie != 0) num.innerHTML = document.cookie
+	var Icookie = parseInt(document.cookie) -1
+
+	document.cookie = Icookie
+	if(Icookie < 0) document.cookie = 0
+	if(Icookie) != 0) num.innerHTML = document.cookie
 	
 	if(document.cookie == 0) {
 		num.innerHTML = "YOU WIN!!!"
