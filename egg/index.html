@@ -1,0 +1,89 @@
+<html>
+<head>
+
+<style>
+img {
+	height: 40em;
+}
+
+h {
+	font-size: 150;
+}
+
+* {
+  touch-action: manipulation;
+}
+
+</style>
+
+<script>
+
+addEventListener("DOMContentLoaded", (event) => {
+var startNum = 10
+if(document.cookie == "") document.cookie = startNum
+
+var egg = document.getElementById("egg");
+var num = document.getElementById("num")
+
+num.innerHTML = document.cookie
+
+egg.oncontextmenu = function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    return false;
+};
+
+
+egg.addEventListener("mousedown", function () {//egg.addEventListener("touchstart", function () {
+	down()
+});
+
+egg.addEventListener("mouseup", function () {//egg.addEventListener("touchend", function () {
+	up()
+});
+
+
+function down() {
+	egg.style.transform = "scale(0.8)";
+}
+
+function up() {
+	egg.style.transform = "scale(1)";
+}
+
+function changeNum() {
+	document.cookie--
+	if(document.cookie < 0) document.cookie = 0
+	if(document.cookie != 0) num.innerHTML = document.cookie
+	
+	if(document.cookie == 0) {
+		num.innerHTML = "YOU WIN!!!"
+		num.style.color = "#d3af37"
+	}
+}
+
+});
+
+
+
+</script>
+
+</head>
+<body style="display: flex; align-items: center; justify-content: center;">
+
+<table>
+	<tr><th>
+		<div style="position: relative;top: -7em;">
+			<h id="num">10</h>
+		</div>
+	</th></tr>
+	<tr><th>
+		<div>
+			<img id="egg" src="https://clipart-library.com/data_images/360077.png"/>
+		</div>
+	</th></tr>
+<table>
+
+</body>
+</html>
