@@ -18,7 +18,7 @@ addEventListener("DOMContentLoaded", (event) => {
 var startNum = 10
 
 alert(parseInt(document.cookie.split(";")[0]))
-if(!isNaN(parseInt(document.cookie.split(";")[0]))) document.cookie = 0
+if(!isNaN(parseInt(document.cookie.split(";")[0])) || !document.cookie.includes(";")) document.cookie = 0
 alert(parseInt(document.cookie.split(";")[0]))
 
 var egg = document.getElementById("egg")
