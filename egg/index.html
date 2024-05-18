@@ -17,6 +17,8 @@ img {
 addEventListener("DOMContentLoaded", (event) => {
 var startNum = 100000
 
+alert(document.cookie)
+	
 if(document.cookie.includes(";")) {
 	if(isNaN(parseInt(document.cookie.split(";")[0]))) {
 		document.cookie = 0
@@ -27,6 +29,8 @@ if(document.cookie.includes(";")) {
 	}
 }
 
+alert(document.cookie)
+	
 var egg = document.getElementById("egg")
 var num = document.getElementById("num")
 var num2 = document.getElementById("num2")
