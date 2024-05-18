@@ -59,8 +59,7 @@ function changeNum() {
 
 	setSave(save)
 	num2.innerHTML = save["num"]
-	if((startNum - save["num"]) <= 0) save["num"] = 0
-	if(save["num"] != 0) num.innerHTML = startNum - save["num"]
+	if(startNum - save["num"] > 0) num.innerHTML = startNum - save["num"]
 	
 	win()
 }
