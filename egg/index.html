@@ -78,8 +78,6 @@ num.innerHTML = startNum - save["num"]
 num2.innerHTML = save["num"]
 win()
 
-var isDown = false
-
 if(mobileCheck()) {
 
 	egg.oncontextmenu = function(event) {
@@ -89,34 +87,12 @@ if(mobileCheck()) {
 		return false;
 	};
 	
-	egg.addEventListener("touchcancel", function (e) {
-		e.preventDefault()
-	});
-	
-	egg.addEventListener("touchmove", function (e) {
-		e.preventDefault()
-	});
-	
-	egg.addEventListener("touchleave", function (e) {
-		e.preventDefault()
-	});
-	
 	egg.addEventListener("touchstart", function (e) {
-		e.preventDefault()
-		if(isDown) return
-
-		isDown = true
 		down()
-		console.log("down")
-		
 	});
 	
 	egg.addEventListener("touchend", function (e) {
-		e.preventDefault()
-		if(!isDown) return
-		isDown = false
 		up()
-		console.log("up")
 	});
 
 } else {
