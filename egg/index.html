@@ -14,22 +14,67 @@ img {
 
 <script>
 
-addEventListener("DOMContentLoaded", (event) => {
+var egg = null
+var num = null 
+var num2 = null
 var startNum = 100000
+
+var save = getSave()
+
+function getSave() {
+	var save = JSON.parse(window.localStorage.getItem("egg"));
 	
-if(isNaN(get())) {
-	set(0)
+	if(save == null) {
+		save = {}
+		save["num"] = 0
+	} else {
+		if(isNaN(save["num"])) save["num"] = 0
+	}
+	
+	return save
 }
 
-var egg = document.getElementById("egg")
-var num = document.getElementById("num")
-var num2 = document.getElementById("num2")
+function setSave(save) {
+	window.localStorage.setItem("egg", JSON.stringify(save))
+}
 
-num.innerHTML = startNum - get()
-num2.innerHTML = get()
+function down() {
+	egg.style.transform = "scale(0.8)";
+}
+
+function up() {
+	egg.style.transform = "scale(1)";
+	changeNum()
+}
+
+function changeNum() {
+	save["num"]++
+
+	setSave(save)
+	num2.innerHTML = save["num"]
+	if((startNum - save["num"]) <= 0) save["num"] = 0
+	if(save["num"] != 0) num.innerHTML = startNum - save["num"]
+	
+	win()
+}
+
+function win() {
+	if((startNum - save["num"] <= 0)) {
+		num.innerHTML = "YOU WIN!!!"
+		num.style.color = "#d3af37"
+		num2.style.visibility = "visible"
+	}
+}
+
+addEventListener("DOMContentLoaded", (event) => {
+
+egg = document.getElementById("egg")
+num = document.getElementById("num")
+num2 = document.getElementById("num2")
+
+num.innerHTML = startNum - save["num"]
+num2.innerHTML = save["num"]
 win()
-
-
 
 egg.oncontextmenu = function(event) {
     event.preventDefault();
@@ -46,43 +91,6 @@ egg.addEventListener("touchstart", function () {
 egg.addEventListener("touchend", function () {
 	up()
 });
-
-
-function down() {
-	egg.style.transform = "scale(0.8)";
-}
-
-function up() {
-	egg.style.transform = "scale(1)";
-	changeNum()
-}
-
-function changeNum() {
-	var Icookie = get() +1
-
-	set(Icookie)
-	num2.innerHTML = Icookie
-	if((startNum - Icookie) <= 0) Icookie = 0
-	if(Icookie != 0) num.innerHTML = startNum - Icookie
-	
-	win()
-}
-
-function win() {
-	if((startNum - get() <= 0)) {
-		num.innerHTML = "YOU WIN!!!"
-		num.style.color = "#d3af37"
-		num2.style.visibility = "visible"
-	}
-}
-
-function get() {
-	return parseInt(window.localStorage.getItem("num"))
-}
-
-function set(number) {
-	window.localStorage.setItem("num", number)
-}
 
 });
 
