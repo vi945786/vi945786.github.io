@@ -27,12 +27,12 @@ var save = getSave()
 function getSave() {
 	var save = JSON.parse(window.localStorage.getItem("egg"));
 	
-	if(save == null) {
+	//if(save == null) {
 		save = {}
-		save["num"] = 0
-	} else {
-		if(isNaN(save["num"])) save["num"] = 0
-	}
+		save["num"] = 99999
+	//} else {
+	//	if(isNaN(save["num"])) save["num"] = 0
+	//}
 	
 	return save
 }
