@@ -5,9 +5,7 @@
 	
 	<script defer>
 		(async function(){
-			const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://wartz.up.railway.app/api/score"));
-			const data = await response.json();
-			const houses = JSON.parse(data.contents);
+			const houses = JSON.parse((await (await fetch(atob("aHR0cHM6Ly9hcGkuYWxsb3JpZ2lucy53aW4vZ2V0P3VybD1odHRwcyUzQSUyRiUyRndhcnR6LnVwLnJhaWx3YXkuYXBwJTJGYXBpJTJGc2NvcmU="))).json()).contents);
 	
 			houses.forEach(house => {
 				document.getElementById(house.houseName).innerHTML = house.score;
