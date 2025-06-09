@@ -3,15 +3,15 @@
 <head>
 	<link rel="stylesheet" href="https://wartz.up.railway.app/assets/index-DrohUkLC.css">
 	
-	<script>
+	<script defer>
 		(async function(){
-			houses = JSON.parse((await (await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://wartz.up.railway.app/api/score"))).json()).contents);
-		
-			document.addEventListener("DOMContentLoaded", (event) => {
-				houses.forEach(house => {
-					console.log(house);
-					document.getElementById(house.houseName).innerHTML = house.score;
-				})
+			const response = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://wartz.up.railway.app/api/score"));
+			const data = await response.json();
+			const houses = JSON.parse(data.contents);
+	
+			houses.forEach(house => {
+				console.log(house);
+				document.getElementById(house.houseName).innerHTML = house.score;
 			});
 		})();
 	</script>
