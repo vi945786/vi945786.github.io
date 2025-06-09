@@ -10,32 +10,31 @@
 			const houses = JSON.parse(data.contents);
 	
 			houses.forEach(house => {
-				console.log(house);
 				document.getElementById(house.houseName).innerHTML = house.score;
 			});
 		})();
 	</script>
 </head>
-<body>
+<body class="centered">
 	<section class="score-board">
 		<div style="position: relative;" class="score-preview">
 			<img src="https://wartz.up.railway.app/assets/Slytherin-YroUKAhD.webp" alt="Slytherin">
-			<div class="centered" id="Slytherin"></div>
+			<div class="centered" style="font-size: 5rem;" id="Slytherin"></div>
 		</div>
 		
 		<div style="position: relative;" class="score-preview">
 			<img src="https://wartz.up.railway.app/assets/Hufflepuff-C8K573xp.webp" alt="Hufflepuff">
-			<div class="centered" id="Hufflepuff"></div>
+			<div class="centered" style="font-size: 5rem;" id="Hufflepuff"></div>
 		</div>
 		
 		<div style="position: relative;" class="score-preview">
 			<img src="https://wartz.up.railway.app/assets/Ravenclaw-fZxdJYMy.webp" alt="Ravenclaw">
-			<div class="centered" id="Ravenclaw"></div>
+			<div class="centered" style="font-size: 5rem;" id="Ravenclaw"></div>
 		</div>
 		
 		<div style="position: relative;" class="score-preview">
 			<img src="https://wartz.up.railway.app/assets/Gryffindor-0y70M3s5.webp" alt="Gryffindor">
-			<div class="centered" id="Gryffindor"></div>
+			<div class="centered" style="font-size: 5rem;" id="Gryffindor"></div>
 		</div>
 	</section>
 </body>
