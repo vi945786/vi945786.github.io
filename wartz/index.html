@@ -1,1 +1,47 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://wartz.up.railway.app/assets/index-DrohUkLC.css">
+	
+	<script>
+		(async function(){
+			houses = JSON.parse((await (await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://wartz.up.railway.app/api/score"))).json()).contents);
+		
+			document.addEventListener("DOMContentLoaded", (event) => {
+				console.log(1);
+				houses.forEach(house => {
+					console.log(house);
+					document.getElementById(house.houseName).innerHTML = house.score;
+				})
+			});
+		});
+	</script>
+</head>
+<body>
+	<section class="score-board">
+		<article class="score-preview">
+			<img src="https://wartz.up.railway.app/assets/Slytherin-YroUKAhD.webp" alt="Slytherin">
+			<h1>Slytherin</h1>
+			<h1 id="Slytherin"></h1>
+		</article>
+		
+		<article class="score-preview">
+			<img src="https://wartz.up.railway.app/assets/Hufflepuff-C8K573xp.webp" alt="Hufflepuff">
+			<h1>Hufflepuff</h1>
+			<h1 id="Hufflepuff"></h1>
+		</article>
+		
+		<article class="score-preview">
+			<img src="https://wartz.up.railway.app/assets/Ravenclaw-fZxdJYMy.webp" alt="Ravenclaw">
+			<h1>Ravenclaw</h1>
+			<h1 id="Ravenclaw"></h1>
+		</article>
+		
+		<article class="score-preview">
+			<img src="https://wartz.up.railway.app/assets/Gryffindor-0y70M3s5.webp" alt="Gryffindor">
+			<h1>Gryffindor</h1>
+			<h1 id="Gryffindor"></h1>
+		</article>
+	</section>
+</body>
+</html>
