@@ -1,0 +1,262 @@
+.loader {
+    width: 4.8px;
+    height: 4.8px;
+    display: block;
+    margin: 20px auto;
+    position: relative;
+    top: 25%;
+    border-radius: 4px;
+    color: #000;
+    background: currentColor;
+    box-sizing: border-box;
+    animation: animloader .3s .3s linear infinite alternate
+}
+
+.loader:after,.loader:before {
+    content: "";
+    box-sizing: border-box;
+    width: 4.8px;
+    height: 4.8px;
+    border-radius: 4px;
+    background: currentColor;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    top: 15px;
+    animation: animloader .3s .45s linear infinite alternate
+}
+
+.loader:after {
+    top: -15px;
+    animation-delay: 0s
+}
+
+@keyframes animloader {
+    0% {
+        width: 4.8px
+    }
+
+    to {
+        width: 48px
+    }
+}
+
+.user-msg {
+    background-color: #292c29;
+    padding: .7em;
+    position: fixed;
+    bottom: 1em;
+    left: 1em;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: .4em
+}
+
+.user-msg.success {
+    background-color: #292c29;
+    color: #fff
+}
+
+.user-msg.error {
+    border: 1px rgb(243,84,84) solid;
+    color: #fff
+}
+
+.user-msg button {
+    background-color: #292c29;
+    color: #fff;
+    float: right;
+    margin: 1em
+}
+
+.home-page {
+    display: grid;
+    grid-template-rows: 70px 1fr;
+    grid-template-columns: minmax(1em,1fr) minmax(auto,960px) minmax(1em,1fr);
+    height: 100vh
+}
+
+.home-header {
+    grid-column: 1/-1;
+    display: flex;
+    justify-content: space-between;
+    padding-inline-end:1em;align-items: center;
+    background-color: #faebd7
+}
+
+.home-header .logo {
+    height: 70px
+}
+
+.home-header .header-nav img {
+    height: 2em
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start
+}
+
+.header-nav>* {
+    margin-inline-start:1em}
+
+.code-screen {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    place-content: center;
+    background-color: #0009
+}
+
+.code-screen .code-modal {
+    width: 80vw;
+    background-color: #faebd7;
+    border-radius: 1em;
+    padding: 1em
+}
+
+.code-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.code-screen .code-modal input {
+    height: 48px;
+    border-radius: .25em;
+    font-size: 2em;
+    padding-inline-start:.5em;border-style: none;
+    width: 100%
+}
+
+.score-screen {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    place-content: center;
+    background-color: #0009
+}
+
+.score-screen .score-modal {
+    background-color: #faebd7;
+    border-radius: 1em;
+    padding: 1em
+}
+
+.score-screen .score-modal .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.score-screen .score-modal img {
+    width: 3em
+}
+
+.score-screen .score-modal .stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-block-end:1em}
+
+.score-screen .score-modal button {
+    padding-inline:.5em;font-weight: 700;
+    font-size: 1em;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: .5em
+}
+
+.score-screen .score-modal button img {
+    width: 40px
+}
+
+.score-screen .score-modal button span {
+    margin-inline-end:.5em}
+
+.score-board {
+    grid-column: 2;
+    height: 100%;
+    display: grid;
+    align-content: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em
+}
+
+.score-board .score-preview {
+    text-align: center
+}
+
+.score-board .score-preview img {
+    width: 100%
+}
+
+.install-btn {
+    padding: .5em;
+    font-weight: 700;
+    font-size: 1em;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: .5em
+}
+
+.user-preview {
+    display: flex;
+    align-items: center
+}
+
+.user-preview>* {
+    margin-inline-end:.5em}
+
+.admin-page .toggle-btn,button {
+    cursor: pointer
+}
+
+li {
+    list-style: none
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.flex-align {
+    display: flex;
+    align-items: center
+}
+
+.centered {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 5vh;
+	color: white;
+	top: 6vh;
+}
