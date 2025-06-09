@@ -256,7 +256,6 @@ html,body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 5vh;
+	font-size: 2.5vh;
 	color: white;
-	top: 6vh;
 }
