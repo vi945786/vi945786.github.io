@@ -4,13 +4,16 @@
 	<link rel="stylesheet" href="index.css">
 	
 	<script defer>
-		(async function(){
+		async function scores() {
 			const houses = JSON.parse((await (await fetch(atob("aHR0cHM6Ly9hcGkuYWxsb3JpZ2lucy53aW4vZ2V0P3VybD1odHRwcyUzQSUyRiUyRndhcnR6LnVwLnJhaWx3YXkuYXBwJTJGYXBpJTJGc2NvcmU="), {"cache": "no-cache"})).json()).contents);
 	
 			houses.forEach(house => {
 				document.getElementById(house.houseName).innerHTML = house.score;
 			});
-		})();
+		}
+		scores();
+	
+		setInterval(scores, 15000);
 	</script>
 </head>
 <body class="centered">
