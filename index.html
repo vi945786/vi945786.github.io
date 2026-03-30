@@ -23,15 +23,12 @@
 
     <main class="shell">
       <header class="hero card">
-        <p class="tag">Tel Aviv Style Dashboard</p>
         <h1>How Long Since The Last Siren?</h1>
         <p class="sub">Realtime updates for any city in Israel.</p>
       </header>
 
       <section class="card spotlight">
         <div class="head-row">
-          <p class="field">Selected City</p>
-          <p id="city-pill" class="city-pill">Loading...</p>
         </div>
 
         <p id="status-chip" class="status-chip quiet">No active siren right now</p>
@@ -57,15 +54,16 @@
 
       <section class="card controls">
         <div class="controls-grid">
-          <input
-            id="city-input"
-            list="city-options"
-            placeholder="Type a city name in Hebrew"
-            autocomplete="off"
-          />
-          <datalist id="city-options"></datalist>
           <button id="apply-city-btn" type="button">Set City</button>
           <button id="locate-btn" type="button" class="ghost">Use My Location</button>
+          <div class="city-picker">
+            <input
+              id="city-input"
+              placeholder="Type a city name in Hebrew"
+              autocomplete="off"
+            />
+            <ul id="city-dropdown" class="city-dropdown hidden"></ul>
+          </div>
         </div>
         <p id="control-message" class="control-message"></p>
       </section>

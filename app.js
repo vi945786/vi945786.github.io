@@ -5,9 +5,9 @@ const CORS_PROXY_PREFIX = "https://cors.io/?url=";
 
 const REFRESH_INTERVAL_MS = 5000;
 const TICK_INTERVAL_MS = 1000;
+const ACTIVE_ALERT_WINDOW_MS = 2 * 60 * 1000;
 
 const dom = {
-  cityPill: document.getElementById("city-pill"),
   statusChip: document.getElementById("status-chip"),
   sinceTimer: document.getElementById("since-timer"),
   sinceCaption: document.getElementById("since-caption"),
@@ -15,7 +15,7 @@ const dom = {
   countWeek: document.getElementById("count-week"),
   countMonth: document.getElementById("count-month"),
   cityInput: document.getElementById("city-input"),
-  cityOptions: document.getElementById("city-options"),
+  cityDropdown: document.getElementById("city-dropdown"),
   applyCityBtn: document.getElementById("apply-city-btn"),
   locateBtn: document.getElementById("locate-btn"),
   controlMessage: document.getElementById("control-message"),
@@ -25,6 +25,7 @@ const dom = {
 const state = {
   cities: {},
   cityAliases: new Map(),
+  cityNames: [],
   selectedCity: null,
   locationSource: "Pending",
   lastPollAt: null,
@@ -112,8 +113,19 @@ function formatDuration(ms) {
   return `${hh}:${mm}:${ss}`;
 }
 
-function renderStatusChip() {
-  dom.statusChip.textContent = "Live city polling active";
+function renderStatusChip(latestAlertDate) {
+  const hasRecentAlert =
+    latestAlertDate instanceof Date &&
+    Date.now() - latestAlertDate.getTime() <= ACTIVE_ALERT_WINDOW_MS;
+
+  if (hasRecentAlert) {
+    dom.statusChip.textContent = "Active alert in selected city";
+    dom.statusChip.classList.remove("quiet");
+    dom.statusChip.classList.add("alerting");
+    return;
+  }
+
+  dom.statusChip.textContent = "No active alert right now";
   dom.statusChip.classList.remove("alerting");
   dom.statusChip.classList.add("quiet");
 }
@@ -134,7 +146,7 @@ function render() {
     dom.sinceCaption.textContent = `Time since last alert in ${state.selectedCity.name}`;
   }
 
-  renderStatusChip();
+  renderStatusChip(latestDate);
   renderAlertCounters();
   renderAlertsHistory();
 }
@@ -233,14 +245,40 @@ async function loadCitiesObject() {
   );
 
   const names = Object.keys(state.cities).sort((a, b) => a.localeCompare(b, "he"));
+  state.cityNames = names;
   state.cityAliases = new Map();
   names.forEach((name) => {
     state.cityAliases.set(normalizeText(name), state.cities[name]);
   });
+  hideCityDropdown();
+}
 
-  dom.cityOptions.innerHTML = names
-    .map((name) => `<option value="${name}"></option>`)
+function hideCityDropdown() {
+  if (!dom.cityDropdown) {
+    return;
+  }
+  dom.cityDropdown.classList.add("hidden");
+}
+
+function renderCityDropdown(names) {
+  if (!dom.cityDropdown) {
+    return;
+  }
+
+  if (!names.length) {
+    dom.cityDropdown.innerHTML = "";
+    hideCityDropdown();
+    return;
+  }
+
+  dom.cityDropdown.innerHTML = names
+    .slice(0, 20)
+    .map(
+      (name) =>
+        `<li><button type="button" class="city-option-btn" data-city-name="${name}">${name}</button></li>`
+    )
     .join("");
+  dom.cityDropdown.classList.remove("hidden");
 }
 
 async function addAlertsToCity(city) {
@@ -301,7 +339,6 @@ function readCityFromUrl() {
 
 function setSelectedCity(city, reason) {
   state.selectedCity = city;
-  dom.cityPill.textContent = city.name;
   dom.cityInput.value = city.name;
   updateUrlCity(city);
   if (reason) {
@@ -427,6 +464,7 @@ async function applySelectedInput() {
     return;
   }
 
+  hideCityDropdown();
   state.locationSource = "Manual selection";
   setSelectedCity(city, `Now tracking ${city.name}`);
   await addAlertsToCity(city);
@@ -464,6 +502,54 @@ function bindEvents() {
     }
   });
 
+  dom.cityInput.addEventListener("input", () => {
+    const query = normalizeText(dom.cityInput.value);
+    if (!query || query.length < 1) {
+      hideCityDropdown();
+      return;
+    }
+    const filtered = state.cityNames.filter((name) =>
+      normalizeText(name).includes(query)
+    );
+    renderCityDropdown(filtered);
+  });
+
+  dom.cityInput.addEventListener("focus", () => {
+    hideCityDropdown();
+  });
+
+  dom.cityDropdown.addEventListener("mousedown", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+    const button = target.closest(".city-option-btn");
+    if (!button) {
+      return;
+    }
+    const cityName = button.getAttribute("data-city-name");
+    if (!cityName) {
+      return;
+    }
+    dom.cityInput.value = cityName;
+    hideCityDropdown();
+    applySelectedInput();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!dom.cityDropdown) {
+      return;
+    }
+    const target = event.target;
+    if (!(target instanceof Node)) {
+      return;
+    }
+    if (target === dom.cityInput || dom.cityDropdown.contains(target)) {
+      return;
+    }
+    hideCityDropdown();
+  });
+
   dom.locateBtn.addEventListener("click", async () => {
     showControlMessage("Detecting your location...");
     await resolveCityFromGeolocation();
@@ -496,12 +582,12 @@ async function initialize() {
     }
   }, REFRESH_INTERVAL_MS);
 
-  showControlMessage(
-    ""
+  if(state.city) showControlMessage(
+    `Now tracking ${state.city.name}`
   );
 }
 
 bindEvents();
-initialize().catch(() => {
+initialize().catch((e) => {
   showControlMessage("Failed to initialize data sources. Please refresh.", true);
 });

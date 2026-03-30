@@ -59,9 +59,9 @@ body {
   z-index: 2;
   max-width: 1040px;
   margin: 0 auto;
-  padding: 28px 16px 40px;
+  padding: 22px 16px 32px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .card {
@@ -73,7 +73,7 @@ body {
 }
 
 .hero {
-  padding: 20px;
+  padding: 16px;
 }
 
 .tag {
@@ -94,13 +94,13 @@ h1 {
 }
 
 .sub {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   color: #a8b7df;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .spotlight {
-  padding: 18px;
+  padding: 14px;
 }
 
 .head-row {
@@ -125,10 +125,22 @@ h1 {
   border: 1px solid #3d559f;
   background: #0f1a38;
   font-weight: 700;
+  border-radius: 10px;
+}
+
+.city-pill-inline {
+  min-width: 168px;
+  max-width: 260px;
+  text-align: right;
+  direction: rtl;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .status-chip {
-  margin: 14px 0 10px;
+  margin: 10px 0 8px;
   width: fit-content;
   border: 1px solid #3c5798;
   background: #0f1a38;
@@ -148,22 +160,24 @@ h1 {
 }
 
 .since-timer {
-  margin: 4px 0;
+  margin: 2px 0;
   font-family: "IBM Plex Mono", monospace;
-  font-size: clamp(2rem, 10vw, 4.4rem);
+  font-size: clamp(1.9rem, 9.5vw, 4.15rem);
   line-height: 1.02;
   font-weight: 700;
   color: #f8fbff;
   text-shadow: 0 0 28px #ff4d5645;
+  text-align: center;
 }
 
 .since-caption {
   margin: 0;
   color: #a8b8e2;
+  text-align: center;
 }
 
 .count-grid {
-  margin-top: 14px;
+  margin-top: 10px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
@@ -173,7 +187,7 @@ h1 {
   margin: 0;
   border: 1px solid #324a8b;
   background: #101b3b;
-  padding: 10px;
+  padding: 8px 10px;
 }
 
 .count-label {
@@ -192,13 +206,20 @@ h1 {
 }
 
 .controls {
-  padding: 14px;
+  padding: 12px;
+  position: relative;
+  z-index: 12;
 }
 
 .controls-grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: auto auto minmax(0, 1fr);
   gap: 8px;
+  align-items: center;
+}
+
+.city-picker {
+  position: relative;
 }
 
 input {
@@ -209,20 +230,68 @@ input {
   padding: 12px;
   font-size: 0.96rem;
   border-radius: 10px;
+  text-align: right;
+  direction: rtl;
 }
 
 input::placeholder {
   color: #8094c8;
 }
 
+.city-dropdown {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 6px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #3a5195;
+  border-radius: 10px;
+  background: #101b3f;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 14px 30px #02071888;
+}
+
+.history {
+  position: relative;
+  z-index: 1;
+}
+
+.city-dropdown.hidden {
+  display: none;
+}
+
+.city-option-btn {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #e9efff;
+  padding: 8px 10px;
+  text-align: right;
+  direction: rtl;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.city-option-btn:hover {
+  border-color: #4f67ad;
+  background: #1d2a55;
+}
+
 button {
   border: 1px solid #f0636c;
   background: linear-gradient(180deg, var(--accent-2), var(--accent));
   color: #fff;
-  padding: 0 14px;
+  min-height: 44px;
+  padding: 0 16px;
   font-weight: 800;
   cursor: pointer;
   border-radius: 10px;
+  white-space: nowrap;
 }
 
 button.ghost {
@@ -243,7 +312,7 @@ button.ghost {
 }
 
 .history {
-  padding: 14px;
+  padding: 12px;
 }
 
 .history-head {
@@ -260,6 +329,28 @@ button.ghost {
   overflow-y: auto;
   display: grid;
   gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #6f87cc #0f1937;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: #0f1937;
+  border: 1px solid #2f4584;
+  border-radius: 999px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #9cb0e4, #5e74bb);
+  border: 2px solid #0f1937;
+  border-radius: 999px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #b3c2ea, #6f87cc);
 }
 
 .history-item {
@@ -276,12 +367,14 @@ button.ghost {
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.82rem;
   color: #9bb0e1;
+  text-align: right;
 }
 
 .history-category {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
+  text-align: right;
 }
 
 .history-empty {
@@ -306,9 +399,23 @@ button.ghost {
     align-items: flex-start;
   }
 
-  .controls-grid,
   .count-grid {
     grid-template-columns: 1fr;
+  }
+
+  .controls-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .city-picker {
+    grid-column: 1 / -1;
+  }
+
+  .city-pill-inline {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    grid-column: 1 / -1;
   }
 
   button {
