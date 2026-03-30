@@ -1,0 +1,83 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Realtime siren watch for Israeli cities. Check how long it has been since the last siren in your city."
+    />
+    <title>Siren Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Assistant:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="mesh mesh-a" aria-hidden="true"></div>
+    <div class="mesh mesh-b" aria-hidden="true"></div>
+
+    <main class="shell">
+      <header class="hero card">
+        <p class="tag">Tel Aviv Style Dashboard</p>
+        <h1>How Long Since The Last Siren?</h1>
+        <p class="sub">Realtime updates for any city in Israel.</p>
+      </header>
+
+      <section class="card spotlight">
+        <div class="head-row">
+          <p class="field">Selected City</p>
+          <p id="city-pill" class="city-pill">Loading...</p>
+        </div>
+
+        <p id="status-chip" class="status-chip quiet">No active siren right now</p>
+
+        <p id="since-timer" class="since-timer">--:--:--</p>
+        <p id="since-caption" class="since-caption">Calculating latest siren timestamp...</p>
+
+        <div class="count-grid">
+          <article class="count-box">
+            <p class="count-label">Last 24h</p>
+            <p id="count-day" class="count-value">0</p>
+          </article>
+          <article class="count-box">
+            <p class="count-label">Last 7d</p>
+            <p id="count-week" class="count-value">0</p>
+          </article>
+          <article class="count-box">
+            <p class="count-label">Last 30d</p>
+            <p id="count-month" class="count-value">0</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card controls">
+        <div class="controls-grid">
+          <input
+            id="city-input"
+            list="city-options"
+            placeholder="Type a city name in Hebrew"
+            autocomplete="off"
+          />
+          <datalist id="city-options"></datalist>
+          <button id="apply-city-btn" type="button">Set City</button>
+          <button id="locate-btn" type="button" class="ghost">Use My Location</button>
+        </div>
+        <p id="control-message" class="control-message"></p>
+      </section>
+
+      <section class="card history">
+        <div class="history-head">
+          <p class="field">Alert History (Last Month)</p>
+        </div>
+        <ul id="alerts-history-list" class="history-list"></ul>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

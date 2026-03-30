@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f2d67" />
+      <stop offset="1" stop-color="#0f1636" />
+    </linearGradient>
+    <linearGradient id="beacon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff8a74" />
+      <stop offset="1" stop-color="#ff3f55" />
+    </linearGradient>
+  </defs>
+
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="url(#bg)" />
+
+  <path d="M64 22l7 11h-14l7-11z" fill="#ffd3a6" />
+
+  <rect x="41" y="42" width="46" height="48" rx="14" fill="url(#beacon)" />
+  <rect x="34" y="90" width="60" height="10" rx="5" fill="#c8d3ff" />
+  <rect x="26" y="100" width="76" height="10" rx="5" fill="#8ca0ea" />
+
+  <path d="M26 48c6-7 13-11 21-13" stroke="#ff7e72" stroke-width="6" stroke-linecap="round" fill="none" />
+  <path d="M102 48c-6-7-13-11-21-13" stroke="#ff7e72" stroke-width="6" stroke-linecap="round" fill="none" />
+  <path d="M20 66h14" stroke="#ffc38d" stroke-width="6" stroke-linecap="round" />
+  <path d="M94 66h14" stroke="#ffc38d" stroke-width="6" stroke-linecap="round" />
+</svg>
