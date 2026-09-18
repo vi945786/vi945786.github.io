@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REVIVAL 2026 Fall</title>
+  <style>
+    html, body { margin: 0; padding: 0; }
+    #comic { margin: 0; padding: 0; }
+    .page { width: 100vw; height: 100vh; }
+    img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  </style>
+</head>
+<body>
+  <main id="comic"></main>
+  <script>
+    (async () => {
+      const bytes = new Uint8Array(await (await fetch("./comic.bin")).arrayBuffer());
+      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const decoder = new TextDecoder("ascii");
+      const comic = document.getElementById("comic");
+
+      if (decoder.decode(bytes.subarray(0, 4)) !== "CJPG") {
+        throw new Error("Invalid comic data");
+      }
+
+      const frames = [];
+      let offset = 8;
+      const frameCount = view.getUint32(4, true);
+      for (let index = 0; index < frameCount; index += 1) {
+        const size = view.getUint32(offset, true);
+        offset += 4;
+        frames.push({ offset, size });
+        offset += size;
+      }
+
+      const pages = frames.map((frame) => {
+        const element = document.createElement("section");
+        element.className = "page";
+        comic.append(element);
+        return { frame, element, rendered: false };
+      });
+
+      function renderPage(item) {
+        if (item.rendered) return;
+        item.rendered = true;
+
+        const png = bytes.slice(item.frame.offset, item.frame.offset + item.frame.size);
+        const url = URL.createObjectURL(new Blob([png], { type: "image/jpeg" }));
+        const image = document.createElement("img");
+        image.onload = () => URL.revokeObjectURL(url);
+        image.src = url;
+        item.element.append(image);
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              const item = pages.find(({ element }) => element === entry.target);
+              if (item) renderPage(item);
+              observer.unobserve(entry.target);
+            }
+          }
+        },
+        { rootMargin: "100% 0px" }
+      );
+
+      pages.forEach(({ element }) => observer.observe(element));
+    })();
+  </script>
+</body>
+</html>
